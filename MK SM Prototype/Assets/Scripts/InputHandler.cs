@@ -10,6 +10,7 @@ namespace GA
 
         float verticalInput;
         float horizontalInput;
+        bool jumpInput;
 
         private void Awake()
         {
@@ -20,12 +21,7 @@ namespace GA
             states.Init();
         }
 
-        private void Update()
-        {
-            //states.Tick(Time.deltaTime);
-        }
-
-        void FixedUpdate()
+        void Update()
         {
             GetInput();
             UpdateStates();
@@ -37,17 +33,16 @@ namespace GA
         {
             verticalInput = Input.GetAxis("Vertical");
             horizontalInput = Input.GetAxis("Horizontal");
+            jumpInput = Input.GetButtonDown("Jump");
         }
 
         void UpdateStates()
         {
             states.verticalInput = verticalInput;
             states.horizontalInput = horizontalInput;
+            states.isJumping = jumpInput;
 
-            if (horizontalInput != 0 || verticalInput != 0)
-                states.isWalking = true;
-            else
-                states.isWalking = false;
+            StateManager.moveAmount = Mathf.Abs(verticalInput) + Mathf.Abs(horizontalInput);
 
             states.Tick(Time.deltaTime);
         }

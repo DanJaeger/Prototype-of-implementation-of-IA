@@ -40,11 +40,10 @@ namespace GA
         {
             states.verticalInput = verticalInput;
             states.horizontalInput = horizontalInput;
-            states.isJumping = jumpInput;
-
-            StateManager.moveAmount = Mathf.Abs(verticalInput) + Mathf.Abs(horizontalInput);
+            states.isJumpPressed = jumpInput;
 
             states.Tick(Time.deltaTime);
+
         }
 
     }

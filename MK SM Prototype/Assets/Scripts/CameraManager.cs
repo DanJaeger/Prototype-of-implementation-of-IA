@@ -11,7 +11,7 @@ namespace GA
         [SerializeField] Transform cam = null;
         [SerializeField] Transform target = null;
         [SerializeField] Transform pivot = null;
-        [SerializeField] Vector3 defaultDistance = new Vector3(0, 4.0f, 7.0f);
+        [SerializeField] Vector3 defaultDistance = new Vector3(0, 3.0f, -6.0f);
         Vector3 velocity = Vector3.zero;
         [SerializeField] float smoothTime = 0.3f;
 
@@ -33,15 +33,17 @@ namespace GA
             
         }
 
+        private void LateUpdate()
+        {
+            cam.LookAt(target.position);
+        }
+
         void FollowPlayer()
         {
-            if (InRange())
-            {
-                Vector3 desiredPosition = target.position + defaultDistance;
-                Vector3 smoothedPosition = Vector3.SmoothDamp(pivot.position, desiredPosition, ref velocity, smoothTime * Time.deltaTime);
-                pivot.position = smoothedPosition;
-            }
-
+            Vector3 desiredPosition = new Vector3(target.position.x, 0, target.position.z) + defaultDistance;
+            Vector3 smoothedPosition = Vector3.SmoothDamp(pivot.position, desiredPosition, ref velocity, smoothTime * Time.deltaTime);
+            pivot.position = smoothedPosition;
+                
         }
 
         void RotateCameraInputBased()
@@ -77,12 +79,12 @@ namespace GA
             cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, target, Time.deltaTime * smoothing);
         }
 
-        bool InRange()
+       /* bool InRange()
         {
             if (target.position.x > -12.0f && target.position.x < 12.0f)
                 return true;
             else
                 return false;
-        }
+        }*/
     }
 }

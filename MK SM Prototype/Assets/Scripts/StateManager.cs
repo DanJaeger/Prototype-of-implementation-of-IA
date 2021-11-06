@@ -5,16 +5,29 @@ using UnityEngine;
 namespace GA {
     public class StateManager : MonoBehaviour
     {
+        #region Components
+        [HideInInspector] public GameObject activeModel;
+        [HideInInspector] public Rigidbody rb;
+        [HideInInspector] public Animator anim;
+        CharacterController characterController;
+        #endregion
+
         //Movement Inputs
         [HideInInspector] public float verticalInput;
         [HideInInspector] public float horizontalInput;
+        [HideInInspector] public bool isFighting;
+        [HideInInspector] public bool isLightPunching;
 
         [Header(header:"Movement Settings")]
         [SerializeField] float moveSpeed = 300f;
         [SerializeField] float rotationSpeed = 500f;
+        [HideInInspector] public bool isMovingRight = false;
+        [HideInInspector] public bool isMovingLeft = false;
         Vector2 currentMovementInput;
         Vector3 currentMovement;
-        bool isMovementPressed;
+        Vector3 appliedMovement;
+        [HideInInspector] public bool isMovementPressed;
+        [HideInInspector] public bool isInBorderArea = false;
 
         [Header(header: "JumpSettings")]
         //Gravity Variables
@@ -24,18 +37,11 @@ namespace GA {
         bool isFalling = false;
 
         float initialJumpVelocity;
-        float maxJumpHeight = 1.0f;
-        float maxJumpTime = 1.0f;
-        bool isJumping = false;
+        [SerializeField] float maxJumpHeight = 2.0f;
+        [SerializeField] float maxJumpTime = 1.0f;
+        [HideInInspector] public bool isJumping = false;
         [HideInInspector] public bool isJumpPressed = false;
         bool isJumpAnimating;
-
-        #region Components
-        [HideInInspector] public GameObject activeModel;
-        [HideInInspector] public Rigidbody rb;
-        [HideInInspector] public Animator anim;
-        CharacterController characterController;
-        #endregion
 
         int isWalkingHash;
         int isJumpingHash;
@@ -85,23 +91,29 @@ namespace GA {
         void MovePlayer(float time)
         {
             #region PlayerMovement
-            currentMovementInput = new Vector2(horizontalInput, verticalInput);
-            currentMovementInput.Normalize();
-            currentMovement.x = currentMovementInput.x;
-            currentMovement.z = currentMovementInput.y;
-            if (currentMovementInput.x != 0 || currentMovementInput.y != 0)
-                isMovementPressed = true;
-            else
-                isMovementPressed = false;
+            if (!isFighting)
+            {
+                currentMovementInput = new Vector2(horizontalInput, verticalInput);
+                currentMovementInput.Normalize();
+                currentMovement.x = currentMovementInput.x;
+                currentMovement.z = currentMovementInput.y;
+                if (currentMovementInput.x != 0 || currentMovementInput.y != 0)
+                    isMovementPressed = true;
+                else
+                    isMovementPressed = false;
 
-            characterController.Move(currentMovement * Time.deltaTime * moveSpeed);
+                isMovingRight = (currentMovement.x > 0.5f) ? true : false;
+                isMovingLeft = (currentMovement.x < -0.5f) ? true : false;
+
+                appliedMovement.x = currentMovement.x * moveSpeed;
+                appliedMovement.z = currentMovement.z * moveSpeed;
+                characterController.Move(appliedMovement * Time.deltaTime);
+            }
             #endregion
-
 
             HandleRotation();
             HandleGravity();
             HandleJump();
-
         }
 
         void SetupJumpVariables()
@@ -118,7 +130,8 @@ namespace GA {
                 anim.SetBool(isJumpingHash, true);
                 isJumping = true;
                 isJumpAnimating = true;
-                currentMovement.y = initialJumpVelocity * 0.5f;
+                currentMovement.y = initialJumpVelocity;
+                appliedMovement.y = initialJumpVelocity;
             }else if(isJumping && characterController.isGrounded && isJumpPressed)
             {
                 isJumping = false;
@@ -153,19 +166,18 @@ namespace GA {
                     isJumpAnimating = false;
                 }
                 currentMovement.y = groundedGravity;
+                appliedMovement.y = groundedGravity;
             }else if (isFalling)
             {
                 float previousYVelocity = currentMovement.y;
-                float newYVelocity = currentMovement.y + (gravity * fallMultiplier * Time.deltaTime);
-                float nextYVelocity = Mathf.Max((previousYVelocity + newYVelocity) * 0.5f, -20.0f);
-                currentMovement.y = nextYVelocity;
+                currentMovement.y = currentMovement.y + (gravity * fallMultiplier * Time.deltaTime);
+                appliedMovement.y = Mathf.Max((previousYVelocity + currentMovement.y) * 0.5f, -20.0f);
             }
             else
             {
                 float previousYVelocity = currentMovement.y;
-                float newYVelocity = currentMovement.y + (gravity * Time.deltaTime);
-                float nextYVelocity = (previousYVelocity + newYVelocity) * 0.5f;
-                currentMovement.y = nextYVelocity;
+                currentMovement.y = currentMovement.y + (gravity * Time.deltaTime);
+                appliedMovement.y = (previousYVelocity + currentMovement.y) * 0.5f;
             }
         }
 
@@ -177,5 +189,6 @@ namespace GA {
             else if (!isMovementPressed && isWalking)
                 anim.SetBool(isWalkingHash, false);
         }
+
     }
 }

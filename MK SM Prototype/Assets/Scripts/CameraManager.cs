@@ -11,12 +11,14 @@ namespace GA
         [SerializeField] Transform cam = null;
         [SerializeField] Transform target = null;
         [SerializeField] Transform pivot = null;
-        [SerializeField] Vector3 defaultDistance = new Vector3(0, 3.0f, -6.0f);
         Vector3 velocity = Vector3.zero;
         [SerializeField] float smoothTime = 0.3f;
 
         #region Offset Settings
-        Quaternion defaultRotation = Quaternion.Euler(20, 0, 0);
+        readonly Quaternion defaultRotation = Quaternion.Euler(20, 0, 0);
+        readonly Vector3 defaultOffset = new Vector3(0, 3.5f, -6.5f);
+        readonly Vector3 moveRightOffset = new Vector3(6, 3.5f, -6.5f);
+        readonly Vector3 moveLeftOffset = new Vector3(-6, 3.5f, -6.5f);
         float smoothInputBased = 5.0f;
         #endregion
 
@@ -27,43 +29,56 @@ namespace GA
 
         private void Update()
         {
-            FollowPlayer();
-            
-            RotateCameraInputBased();
-            
+            RotateCameraInputBased();   
         }
 
-        private void LateUpdate()
+        void LateUpdate()
         {
-            cam.LookAt(target.position);
+            if (states.isInBorderArea)
+            {
+                //TODO
+            }
+            else
+                FollowPlayer();
+            
         }
-
         void FollowPlayer()
         {
-            Vector3 desiredPosition = new Vector3(target.position.x, 0, target.position.z) + defaultDistance;
-            Vector3 smoothedPosition = Vector3.SmoothDamp(pivot.position, desiredPosition, ref velocity, smoothTime * Time.deltaTime);
-            pivot.position = smoothedPosition;
-                
+            Vector3 desiredPosition;
+            if (states.isMovingRight && !states.isFighting)
+            {
+                    desiredPosition = new Vector3(target.position.x, 0, target.position.z) + moveRightOffset;
+            }
+            else if (states.isMovingLeft && !states.isFighting)
+            {
+                    desiredPosition = new Vector3(target.position.x, 0, target.position.z) + moveLeftOffset;
+            }
+            else
+                desiredPosition = new Vector3(target.position.x, 0, target.position.z) + defaultOffset;
+
+                Vector3 smoothedPosition = Vector3.SmoothDamp(pivot.position, desiredPosition, ref velocity, smoothTime * Time.deltaTime);
+                pivot.position = smoothedPosition;
+            
         }
 
         void RotateCameraInputBased()
         {
             // Rotate the cube by converting the angles into a quaternion.
-            if (Input.GetKey(KeyCode.I))
+            if (Input.GetKey(KeyCode.UpArrow))
             {
                 float tiltAngle = 5.0f;
                 RotateCamera(Quaternion.Euler(tiltAngle, 0, 0), smoothInputBased);
-            }else if (Input.GetKey(KeyCode.K))
+            }else if (Input.GetKey(KeyCode.DownArrow))
             {
                 float tiltAngle = 35.0f;
                 RotateCamera(Quaternion.Euler(tiltAngle, 0, 0), smoothInputBased);
             }
-            else if (Input.GetKey(KeyCode.J))
+            else if (Input.GetKey(KeyCode.LeftArrow))
             {
                 float tiltAngle = -35.0f;
                 RotateCamera(Quaternion.Euler(20, tiltAngle, 0), smoothInputBased);
             }
-            else if (Input.GetKey(KeyCode.L))
+            else if (Input.GetKey(KeyCode.RightArrow))
             {
                 float tiltAngle = 35.0f;
                 RotateCamera(Quaternion.Euler(20, tiltAngle, 0), smoothInputBased);
@@ -78,13 +93,5 @@ namespace GA
         {
             cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, target, Time.deltaTime * smoothing);
         }
-
-       /* bool InRange()
-        {
-            if (target.position.x > -12.0f && target.position.x < 12.0f)
-                return true;
-            else
-                return false;
-        }*/
     }
 }

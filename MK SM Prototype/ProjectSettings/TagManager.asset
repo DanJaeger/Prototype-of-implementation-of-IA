@@ -5,17 +5,20 @@ TagManager:
   serializedVersion: 2
   tags:
   - Shootable
+  - Ground
+  - BorderZone
+  - Enemy
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Lighting
   - Water
   - UI
-  - 
-  - 
-  - Lighting
   - Ground
+  - PushBox
+  - HurtBox
+  - HitBox
   - Postprocessing
   - 
   - 

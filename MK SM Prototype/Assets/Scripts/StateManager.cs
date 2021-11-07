@@ -9,6 +9,7 @@ namespace GA {
         [HideInInspector] public GameObject activeModel;
         [HideInInspector] public Rigidbody rb;
         [HideInInspector] public Animator anim;
+        FightingSystem fightingSystem;
         CharacterController characterController;
         #endregion
 
@@ -46,7 +47,7 @@ namespace GA {
         int isWalkingHash;
         int isJumpingHash;
 
-        [HideInInspector] public float delta;
+        [HideInInspector] public float deltaTime;
 
         public void Init()
         {
@@ -54,6 +55,7 @@ namespace GA {
             SetupJumpVariables();
             rb = GetComponent<Rigidbody>();
             characterController = GetComponent<CharacterController>();
+            fightingSystem = GetComponentInChildren<FightingSystem>();
         }
 
         void SetupAnimator()
@@ -83,7 +85,7 @@ namespace GA {
 
         public void Tick(float d)
         {
-            delta = d;
+            deltaTime = d;
             MovePlayer(d);
             HandleAnimations();
         }
@@ -151,8 +153,22 @@ namespace GA {
             if (positionToLookAt != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(positionToLookAt);
-                transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationSpeed * delta);
+                transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationSpeed * deltaTime);
+            }else if(CanRotateWhileFighting())
+            {
+                Vector3 targetDirection = fightingSystem.GetTargetDirection();
+                targetDirection.y = 0;
+                Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+                transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationSpeed * deltaTime);
             }
+        }
+
+        bool CanRotateWhileFighting()
+        {
+            if (isFighting && FightingSystem.enemyInRadius && fightingSystem.EnemyInFieldOfView())
+                return true;
+            else
+                return false;
         }
 
         void HandleGravity()

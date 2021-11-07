@@ -703,18 +703,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightPunch: 0
-  extremities:
-  - {fileID: 680716737080695198}
-  - {fileID: 5554820248585628}
-  - {fileID: 8404232991242499923}
-  - {fileID: 2715750532682644150}
-  - {fileID: 8742008232309610926}
-  - {fileID: 1165497523}
   enemyLayers:
     serializedVersion: 2
     m_Bits: 512
   detectionRadius: 4
-  isInRadius: 0
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1034,7 +1026,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 4258945867488197400}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.10334223
   m_Height: 0.45606777
   m_Direction: 1
@@ -1678,7 +1670,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 5554820248585626}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.054837808
   m_Height: 0.16491489
   m_Direction: 1
@@ -1879,7 +1871,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 680716737080695196}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.054837808
   m_Height: 0.16491489
   m_Direction: 1
@@ -2461,7 +2453,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 2715750532682644148}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.1
   m_Height: 0.37476298
   m_Direction: 1
@@ -3536,7 +3528,7 @@ MonoBehaviour:
   maxJumpTime: 1
   isJumping: 0
   isJumpPressed: 0
-  delta: 0
+  deltaTime: 0
 --- !u!114 &7004123305756609099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3918,7 +3910,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 8404232991242499921}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.1
   m_Height: 0.37476298
   m_Direction: 1
@@ -4025,7 +4017,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 8742008232309610924}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.10334223
   m_Height: 0.45606777
   m_Direction: 1

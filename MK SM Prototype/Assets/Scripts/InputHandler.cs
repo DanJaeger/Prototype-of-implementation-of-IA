@@ -51,7 +51,7 @@ namespace GA
             states.isJumpPressed = jumpInput;
 
             states.Tick(Time.deltaTime);
-            fightingSystem.Tick();
+            fightingSystem.Tick(Time.deltaTime);
 
             fightingSystem.lightPunch = lightPunch;
 

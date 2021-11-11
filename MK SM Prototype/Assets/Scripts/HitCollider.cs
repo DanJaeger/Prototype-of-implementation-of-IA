@@ -21,8 +21,8 @@ namespace GA {
             {
                 Enemy enemy = other.GetComponentInParent<Enemy>();
                 Debug.LogFormat("I Hit {0} with {1}", other.name, punchName);
-                enemy.health -= damage;
-                Debug.LogFormat("Enemy Health: {0}", enemy.health);
+                enemy.Health -= damage;
+                Debug.LogFormat("Enemy Health: {0}", enemy.Health);
             }
         }
     }

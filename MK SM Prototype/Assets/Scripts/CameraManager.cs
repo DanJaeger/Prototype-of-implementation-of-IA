@@ -12,7 +12,7 @@ namespace GA
         [SerializeField] Transform target = null;
         [SerializeField] Transform pivot = null;
         Vector3 velocity = Vector3.zero;
-        [SerializeField] float smoothTime = 0.3f;
+        [SerializeField] readonly float smoothTime = 40.0f;
 
         #region Offset Settings
         readonly Quaternion defaultRotation = Quaternion.Euler(20, 0, 0);

@@ -24,6 +24,8 @@ namespace GA
         public static bool enemyInRadius = false;
         [HideInInspector] public static GameObject closestEnemy = null;
 
+        bool canIMove = false;
+
         public void Init()
         {
             states = GetComponentInParent<StateManager>();
@@ -36,7 +38,7 @@ namespace GA
             lightAttackHash = Animator.StringToHash("LightAttack");
 
         }
-        public void Tick(float d)
+        public void Tick(float deltaTime)
         {
             if (lightPunch)
             {
@@ -44,6 +46,10 @@ namespace GA
                 states.isLightPunching = true;
             }
             CheckForEnemyInRadius();
+            if (canIMove)
+            {
+                StartCoroutine(MoveForwardWhilePunching(deltaTime));
+            }
         }
 
         void StartCombo()
@@ -54,13 +60,13 @@ namespace GA
             if (punchsCount == 1)
             {
                 states.anim.SetInteger(lightAttackHash, 1);
+                canIMove = true;
             }
             states.isFighting = true;
         }
         public void CheckCombo()
         {
             canIPunch = false;
-
             if (states.anim.GetCurrentAnimatorStateInfo(0).IsName("LightAttack_1") && punchsCount == 1)
             {
                 EndLightPunchCombo();
@@ -68,6 +74,7 @@ namespace GA
             else if (states.anim.GetCurrentAnimatorStateInfo(0).IsName("LightAttack_1") && punchsCount >= 2)
             {
                 states.anim.SetInteger(lightAttackHash, 2);
+                canIMove = true;
                 canIPunch = true;
             }
             else if (states.anim.GetCurrentAnimatorStateInfo(0).IsName("LightAttack_2") && punchsCount == 2)
@@ -145,6 +152,13 @@ namespace GA
             if(closestEnemy != null && enemyInRadius)
                 Gizmos.DrawLine(this.transform.position, closestEnemy.transform.position);
             
+        }
+
+        IEnumerator MoveForwardWhilePunching(float deltaTime)
+        {
+            states.MoveForwardWhilePunching(deltaTime);
+            yield return new WaitForSeconds(0.15f);
+            canIMove = false;
         }
 
     }

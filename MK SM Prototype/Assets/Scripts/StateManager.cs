@@ -86,11 +86,11 @@ namespace GA {
         public void Tick(float d)
         {
             deltaTime = d;
-            MovePlayer(d);
+            MovePlayer(deltaTime);
             HandleAnimations();
         }
         
-        void MovePlayer(float time)
+        void MovePlayer(float deltaTime)
         {
             #region PlayerMovement
             if (!isFighting)
@@ -109,7 +109,7 @@ namespace GA {
 
                 appliedMovement.x = currentMovement.x * moveSpeed;
                 appliedMovement.z = currentMovement.z * moveSpeed;
-                characterController.Move(appliedMovement * Time.deltaTime);
+                characterController.Move(appliedMovement * deltaTime);
             }
             #endregion
 
@@ -204,6 +204,11 @@ namespace GA {
                 anim.SetBool(isWalkingHash, true);
             else if (!isMovementPressed && isWalking)
                 anim.SetBool(isWalkingHash, false);
+        }
+
+        public void MoveForwardWhilePunching(float deltaTime)
+        {
+            characterController.Move(transform.forward * moveSpeed * Time.deltaTime);
         }
 
     }

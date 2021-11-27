@@ -468,7 +468,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7086a4722d215984f9778a7f55ca719c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 0
 --- !u!1 &855190923
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,7 +501,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7086a4722d215984f9778a7f55ca719c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 0
 --- !u!136 &855190925
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -629,7 +627,6 @@ MonoBehaviour:
   cam: {fileID: 963194228}
   target: {fileID: 6298562055288830042}
   pivot: {fileID: 701432574}
-  smoothTime: 40
 --- !u!4 &910698725
 Transform:
   m_ObjectHideFlags: 0
@@ -703,6 +700,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightPunch: 0
+  heavyPunch: 0
   enemyLayers:
     serializedVersion: 2
     m_Bits: 512
@@ -922,7 +920,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7086a4722d215984f9778a7f55ca719c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 0
 --- !u!136 &1136758327
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1028,9 +1025,9 @@ CapsuleCollider:
   m_IsTrigger: 1
   m_Enabled: 0
   m_Radius: 0.10334223
-  m_Height: 0.45606777
+  m_Height: 0.5587688
   m_Direction: 1
-  m_Center: {x: -0.0037406096, y: 0.20380089, z: -0.012952251}
+  m_Center: {x: -0.0037406085, y: 0.2551511, z: -0.012952255}
 --- !u!114 &1165497524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3517,7 +3514,6 @@ MonoBehaviour:
   verticalInput: 0
   horizontalInput: 0
   isFighting: 0
-  isLightPunching: 0
   moveSpeed: 7
   rotationSpeed: 10
   isMovingRight: 0

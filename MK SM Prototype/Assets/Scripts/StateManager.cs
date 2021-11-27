@@ -16,12 +16,10 @@ namespace GA {
         //Movement Inputs
         [HideInInspector] public float verticalInput;
         [HideInInspector] public float horizontalInput;
-        [HideInInspector] public bool isFighting;
-        [HideInInspector] public bool isLightPunching;
 
         [Header(header:"Movement Settings")]
-        [SerializeField] float moveSpeed = 300f;
-        [SerializeField] float rotationSpeed = 500f;
+        const float movementVelocity = 7.0f;
+        const float rotationSpeed = 10.0f;
         [HideInInspector] public bool isMovingRight = false;
         [HideInInspector] public bool isMovingLeft = false;
         Vector2 currentMovementInput;
@@ -38,8 +36,8 @@ namespace GA {
         bool isFalling = false;
 
         float initialJumpVelocity;
-        [SerializeField] float maxJumpHeight = 2.0f;
-        [SerializeField] float maxJumpTime = 1.0f;
+        const float maxJumpHeight = 2.0f;
+        const float maxJumpTime = 1.0f;
         [HideInInspector] public bool isJumping = false;
         [HideInInspector] public bool isJumpPressed = false;
         bool isJumpAnimating;
@@ -47,12 +45,13 @@ namespace GA {
         int isWalkingHash;
         int isJumpingHash;
 
-        [HideInInspector] public float deltaTime;
+        float deltaTime;
 
         public void Init()
         {
             SetupAnimator();
             SetupJumpVariables();
+
             rb = GetComponent<Rigidbody>();
             characterController = GetComponent<CharacterController>();
             fightingSystem = GetComponentInChildren<FightingSystem>();
@@ -87,35 +86,48 @@ namespace GA {
         {
             deltaTime = d;
             MovePlayer(deltaTime);
-            HandleAnimations();
         }
         
         void MovePlayer(float deltaTime)
         {
             #region PlayerMovement
-            if (!isFighting)
+            if (!FightingSystem.isFighting)
             {
-                currentMovementInput = new Vector2(horizontalInput, verticalInput);
-                currentMovementInput.Normalize();
-                currentMovement.x = currentMovementInput.x;
-                currentMovement.z = currentMovementInput.y;
-                if (currentMovementInput.x != 0 || currentMovementInput.y != 0)
-                    isMovementPressed = true;
-                else
-                    isMovementPressed = false;
-
-                isMovingRight = (currentMovement.x > 0.5f) ? true : false;
-                isMovingLeft = (currentMovement.x < -0.5f) ? true : false;
-
-                appliedMovement.x = currentMovement.x * moveSpeed;
-                appliedMovement.z = currentMovement.z * moveSpeed;
-                characterController.Move(appliedMovement * deltaTime);
+                HandleMovement(deltaTime);
             }
             #endregion
 
             HandleRotation();
             HandleGravity();
             HandleJump();
+        }
+
+        void HandleMovement(float deltaTime)
+        {
+            currentMovementInput = new Vector2(horizontalInput, verticalInput);
+            currentMovementInput.Normalize();
+            currentMovement.x = currentMovementInput.x;
+            currentMovement.z = currentMovementInput.y;
+
+            isMovementPressed = (currentMovementInput.x != 0 || currentMovementInput.y != 0) ? true : false;
+
+            isMovingRight = (currentMovement.x > 0.5f) ? true : false;
+            isMovingLeft = (currentMovement.x < -0.5f) ? true : false;
+
+            anim.SetBool(isWalkingHash, isMovementPressed);
+
+            appliedMovement.x = currentMovement.x * movementVelocity;
+            appliedMovement.z = currentMovement.z * movementVelocity;
+
+            if (!FightingSystem.isBlocking) {
+                characterController.Move(appliedMovement * deltaTime);
+            }
+            else
+            {
+                bool isWalkingAnimationActive = anim.GetBool(isWalkingHash);
+                if (isWalkingAnimationActive)
+                    anim.SetBool(isWalkingHash, false);
+            }
         }
 
         void SetupJumpVariables()
@@ -127,17 +139,30 @@ namespace GA {
 
         void HandleJump()
         {
-            if(!isJumping && characterController.isGrounded && isJumpPressed)
+            if(CanJump())
             {
                 anim.SetBool(isJumpingHash, true);
                 isJumping = true;
                 isJumpAnimating = true;
                 currentMovement.y = initialJumpVelocity;
                 appliedMovement.y = initialJumpVelocity;
-            }else if(isJumping && characterController.isGrounded && isJumpPressed)
+            }else if(!CanJump())
             {
                 isJumping = false;
             }
+        }
+
+        bool CanJump()
+        {
+            bool canJump = false;
+            if(!isJumping && characterController.isGrounded && isJumpPressed && !FightingSystem.isBlocking)
+            {
+                canJump = true;
+            }else if(isJumping && characterController.isGrounded && isJumpPressed)
+            {
+                canJump = false;
+            }
+            return canJump;
         }
 
         void HandleRotation()
@@ -154,7 +179,7 @@ namespace GA {
             {
                 Quaternion targetRotation = Quaternion.LookRotation(positionToLookAt);
                 transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationSpeed * deltaTime);
-            }else if(CanRotateWhileFighting())
+            } else if (CanRotateWhileFighting())
             {
                 Vector3 targetDirection = fightingSystem.GetTargetDirection();
                 targetDirection.y = 0;
@@ -165,7 +190,7 @@ namespace GA {
 
         bool CanRotateWhileFighting()
         {
-            if (isFighting && FightingSystem.enemyInRadius && fightingSystem.EnemyInFieldOfView())
+            if (FightingSystem.isFighting && FightingSystem.enemyInRadius && fightingSystem.EnemyInFieldOfView())
                 return true;
             else
                 return false;
@@ -183,7 +208,8 @@ namespace GA {
                 }
                 currentMovement.y = groundedGravity;
                 appliedMovement.y = groundedGravity;
-            }else if (isFalling)
+            }
+            else if (isFalling)
             {
                 float previousYVelocity = currentMovement.y;
                 currentMovement.y = currentMovement.y + (gravity * fallMultiplier * Time.deltaTime);
@@ -197,18 +223,9 @@ namespace GA {
             }
         }
 
-        void HandleAnimations()
-        {
-            bool isWalking = anim.GetBool("IsWalking");
-            if (isMovementPressed && !isWalking)
-                anim.SetBool(isWalkingHash, true);
-            else if (!isMovementPressed && isWalking)
-                anim.SetBool(isWalkingHash, false);
-        }
-
         public void MoveForwardWhilePunching(float deltaTime)
         {
-            characterController.Move(transform.forward * moveSpeed * Time.deltaTime);
+            characterController.Move(transform.forward * (movementVelocity/2) * deltaTime);
         }
 
     }

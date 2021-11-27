@@ -45,11 +45,11 @@ namespace GA
         void FollowPlayer()
         {
             Vector3 desiredPosition;
-            if (states.isMovingRight && !states.isFighting)
+            if (states.isMovingRight && !FightingSystem.isFighting && !FightingSystem.isBlocking)
             {
                     desiredPosition = new Vector3(target.position.x, 0, target.position.z) + moveRightOffset;
             }
-            else if (states.isMovingLeft && !states.isFighting)
+            else if (states.isMovingLeft && !FightingSystem.isFighting && !FightingSystem.isBlocking)
             {
                     desiredPosition = new Vector3(target.position.x, 0, target.position.z) + moveLeftOffset;
             }

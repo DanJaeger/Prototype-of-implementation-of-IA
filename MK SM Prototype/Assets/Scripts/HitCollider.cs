@@ -17,7 +17,7 @@ namespace GA {
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.tag == "Enemy" && states.isLightPunching)
+            if (other.tag == "Enemy")
             {
                 Enemy enemy = other.GetComponentInParent<Enemy>();
                 Debug.LogFormat("I Hit {0} with {1}", other.name, punchName);

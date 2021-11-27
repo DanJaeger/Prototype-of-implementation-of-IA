@@ -14,7 +14,7 @@ namespace GA
         bool jumpInput;
         bool lightPunch;
         bool heavyPunch;
-        bool kick;
+        bool blockingPunch;
 
         private void Awake()
         {
@@ -31,6 +31,7 @@ namespace GA
         {
             GetInput();
             UpdateStates();
+            UpdateInputs();
         }
 
 
@@ -41,20 +42,26 @@ namespace GA
             jumpInput = Input.GetButtonDown("Jump");
 
             lightPunch = Input.GetKeyDown(KeyCode.J);
+            heavyPunch = Input.GetKeyDown(KeyCode.K);
+            blockingPunch = Input.GetKey(KeyCode.P);
 
         }
 
         void UpdateStates()
         {
+            states.Tick(Time.deltaTime);
+            fightingSystem.Tick(Time.deltaTime);
+        }
+
+        void UpdateInputs()
+        {
             states.verticalInput = verticalInput;
             states.horizontalInput = horizontalInput;
             states.isJumpPressed = jumpInput;
 
-            states.Tick(Time.deltaTime);
-            fightingSystem.Tick(Time.deltaTime);
-
             fightingSystem.lightPunch = lightPunch;
-
+            fightingSystem.heavyPunch = heavyPunch;
+            fightingSystem.blockingPunch = blockingPunch;
         }
 
     }

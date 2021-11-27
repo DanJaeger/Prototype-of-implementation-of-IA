@@ -11,20 +11,26 @@ namespace GA
         Transform playerTransform;
 
         [HideInInspector] public bool lightPunch;
+        [HideInInspector] public bool heavyPunch;
+        [HideInInspector] public bool blockingPunch;
 
-        static int punchsCount;
+        static int lightsPunchsCount;
         bool canIPunch;
 
         int lightAttackHash;
+        int heavyAttackHash;
+        int blockingPunchHash;
 
         [SerializeField] LayerMask enemyLayers;
-        public float detectionRadius = 4.0f;
-        float viewAngle = 70.0f;
+        const float detectionRadius = 4.0f;
+        const float viewAngle = 80.0f;
         float distanceToPunch;
         public static bool enemyInRadius = false;
+        public static bool isBlocking = false;
+        public static bool isFighting = false;
         [HideInInspector] public static GameObject closestEnemy = null;
 
-        bool canIMove = false;
+        static bool canIMove = false;
 
         public void Init()
         {
@@ -32,19 +38,33 @@ namespace GA
             playerTransform = states.gameObject.transform;
 
             distanceToPunch = detectionRadius * 2.5f;
-            punchsCount = 0;
+            lightsPunchsCount = 0;
             canIPunch = true;
 
             lightAttackHash = Animator.StringToHash("LightAttack");
+            heavyAttackHash = Animator.StringToHash("HeavyPunch");
+            blockingPunchHash = Animator.StringToHash("IsBlocking");
 
         }
+
         public void Tick(float deltaTime)
         {
-            if (lightPunch)
+            if (lightPunch && !isBlocking)
             {
-                StartCombo();
-                states.isLightPunching = true;
+                StartLightCombo();
             }
+        
+            if (heavyPunch && !isBlocking)
+            {
+                StartHeavyPunch();
+            }
+        
+            isBlocking = (blockingPunch && !isFighting) ? true : false;
+            if (isBlocking)
+                states.anim.SetBool(blockingPunchHash, true);
+            else
+                states.anim.SetBool(blockingPunchHash, false);
+
             CheckForEnemyInRadius();
             if (canIMove)
             {
@@ -52,36 +72,36 @@ namespace GA
             }
         }
 
-        void StartCombo()
+        void StartLightCombo()
         {
-            if (canIPunch && punchsCount <=3)
-                ++punchsCount;
+            if (canIPunch && lightsPunchsCount <=3)
+                ++lightsPunchsCount;
 
-            if (punchsCount == 1)
+            if (lightsPunchsCount == 1)
             {
                 states.anim.SetInteger(lightAttackHash, 1);
                 canIMove = true;
             }
-            states.isFighting = true;
+            isFighting = true;
         }
-        public void CheckCombo()
+        public void CheckLightCombo()
         {
             canIPunch = false;
-            if (states.anim.GetCurrentAnimatorStateInfo(0).IsName("LightAttack_1") && punchsCount == 1)
+            if (states.anim.GetCurrentAnimatorStateInfo(0).IsName("LightAttack_1") && lightsPunchsCount == 1)
             {
                 EndLightPunchCombo();
             }
-            else if (states.anim.GetCurrentAnimatorStateInfo(0).IsName("LightAttack_1") && punchsCount >= 2)
+            else if (states.anim.GetCurrentAnimatorStateInfo(0).IsName("LightAttack_1") && lightsPunchsCount >= 2)
             {
                 states.anim.SetInteger(lightAttackHash, 2);
                 canIMove = true;
                 canIPunch = true;
             }
-            else if (states.anim.GetCurrentAnimatorStateInfo(0).IsName("LightAttack_2") && punchsCount == 2)
+            else if (states.anim.GetCurrentAnimatorStateInfo(0).IsName("LightAttack_2") && lightsPunchsCount == 2)
             {
                 EndLightPunchCombo();
             }
-            else if (states.anim.GetCurrentAnimatorStateInfo(0).IsName("LightAttack_2") && punchsCount >= 3)
+            else if (states.anim.GetCurrentAnimatorStateInfo(0).IsName("LightAttack_2") && lightsPunchsCount >= 3)
             {
                 states.anim.SetInteger(lightAttackHash, 3);
                 canIPunch = false;
@@ -97,11 +117,32 @@ namespace GA
         {
             states.anim.SetInteger(lightAttackHash, 0);
             canIPunch = true;
-            punchsCount = 0;
+            lightsPunchsCount = 0;
 
-            states.isFighting = false;
-            states.isLightPunching = false;
+            isFighting = false;
         }
+
+        void StartHeavyPunch()
+        {
+            if (canIPunch)
+            {
+                canIPunch = false;
+                states.anim.SetInteger(heavyAttackHash, 1);
+                canIMove = true;
+                isFighting = true;
+            }
+        }
+        
+        void CheckHeavyPunch()
+        {
+            if (states.anim.GetCurrentAnimatorStateInfo(0).IsName("HeavyPunch"))
+            {
+                states.anim.SetInteger(heavyAttackHash, 0);
+                canIPunch = true;
+                isFighting = false;
+            }
+        } 
+
         void CheckForEnemyInRadius()
         {
             float distanceToClosestEnemy = Mathf.Infinity;
@@ -116,24 +157,16 @@ namespace GA
                     closestEnemy = currentEnemy.gameObject;
                 }
                 
-                if (distanceToClosestEnemy <= distanceToPunch)
-                    enemyInRadius = true;
-                else
-                    enemyInRadius = false;
-
+                enemyInRadius = (distanceToClosestEnemy <= distanceToPunch) ? true : false;
             }
         }
         public Vector3 GetTargetDirection()
         {
             Vector3 targetDirection = Vector3.zero;
-            if (closestEnemy != null)
-            {
-                targetDirection = closestEnemy.transform.position - playerTransform.position;
-            }
-            else
-            {
-                targetDirection = playerTransform.forward;
-            }
+
+            targetDirection = (closestEnemy != null) ? closestEnemy.transform.position - playerTransform.position : 
+                playerTransform.forward;
+
             return targetDirection;
         }
 
@@ -160,6 +193,5 @@ namespace GA
             yield return new WaitForSeconds(0.15f);
             canIMove = false;
         }
-
     }
 }

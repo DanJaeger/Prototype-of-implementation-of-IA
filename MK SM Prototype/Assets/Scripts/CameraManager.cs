@@ -6,7 +6,7 @@ namespace GA
 {
     public class CameraManager : MonoBehaviour
     {
-        StateManager states;
+        PlayerMovementHandler movementHandler;
 
         [SerializeField] Transform cam = null;
         [SerializeField] Transform target = null;
@@ -24,17 +24,17 @@ namespace GA
 
         private void Awake()
         {
-            states = FindObjectOfType<StateManager>();
+            movementHandler = FindObjectOfType<PlayerMovementHandler>();
         }
 
         private void Update()
         {
-            RotateCameraInputBased();   
+        //    RotateCameraInputBased();   
         }
 
         void LateUpdate()
         {
-            if (states.isInBorderArea)
+            if (movementHandler.isInBorderArea)
             {
                 //TODO
             }
@@ -45,11 +45,11 @@ namespace GA
         void FollowPlayer()
         {
             Vector3 desiredPosition;
-            if (states.isMovingRight && !FightingSystem.isFighting && !FightingSystem.isBlocking)
+            if (movementHandler.isMovingRight && !FightingSystem.isFighting && !FightingSystem.isBlocking)
             {
                     desiredPosition = new Vector3(target.position.x, 0, target.position.z) + moveRightOffset;
             }
-            else if (states.isMovingLeft && !FightingSystem.isFighting && !FightingSystem.isBlocking)
+            else if (movementHandler.isMovingLeft && !FightingSystem.isFighting && !FightingSystem.isBlocking)
             {
                     desiredPosition = new Vector3(target.position.x, 0, target.position.z) + moveLeftOffset;
             }

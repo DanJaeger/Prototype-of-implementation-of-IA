@@ -5,14 +5,14 @@ using UnityEngine;
 namespace GA {
     public class BorderDetection : MonoBehaviour
     {
-        StateManager states;
+        PlayerMovementHandler movementHandler;
 
         private void OnTriggerStay(Collider other)
         {
             if (other.tag == "Player")
             {
-                states = other.GetComponent<StateManager>();
-                states.isInBorderArea = true;
+                movementHandler = other.GetComponent<PlayerMovementHandler>();
+                movementHandler.isInBorderArea = true;
             }
         }
 
@@ -20,8 +20,8 @@ namespace GA {
         {
             if (other.tag == "Player")
             {
-                states = other.GetComponent<StateManager>();
-                states.isInBorderArea = false;
+                movementHandler = other.GetComponent<PlayerMovementHandler>();
+                movementHandler.isInBorderArea = false;
             }
         }
 

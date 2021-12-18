@@ -7,7 +7,6 @@ namespace GA
     public class Enemy : MonoBehaviour
     {
         private float health;
-
         public float Health { get => health; set => health = value; }
 
         private void Start()

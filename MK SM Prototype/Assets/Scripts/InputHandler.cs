@@ -6,39 +6,30 @@ namespace GA
 {
     public class InputHandler : MonoBehaviour
     {
-        StateManager states;
+        PlayerMovementHandler movementHandler;
         FightingSystem fightingSystem;
 
-        float verticalInput;
-        float horizontalInput;
+        Vector2 movementInput;
         bool jumpInput;
         bool lightPunch;
         bool heavyPunch;
         bool blockingPunch;
 
-        private void Awake()
+        void Awake()
         {
-            states = GetComponent<StateManager>();
+            movementHandler = GetComponent<PlayerMovementHandler>();
             fightingSystem = GetComponentInChildren<FightingSystem>();
-        }
-        void Start()
-        {
-            states.Init();
-            fightingSystem.Init();
         }
 
         void Update()
         {
             GetInput();
-            UpdateStates();
             UpdateInputs();
         }
-
-
         void GetInput()
         {
-            verticalInput = Input.GetAxis("Vertical");
-            horizontalInput = Input.GetAxis("Horizontal");
+            movementInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+
             jumpInput = Input.GetButtonDown("Jump");
 
             lightPunch = Input.GetKeyDown(KeyCode.J);
@@ -47,21 +38,14 @@ namespace GA
 
         }
 
-        void UpdateStates()
-        {
-            states.Tick(Time.deltaTime);
-            fightingSystem.Tick(Time.deltaTime);
-        }
-
         void UpdateInputs()
         {
-            states.verticalInput = verticalInput;
-            states.horizontalInput = horizontalInput;
-            states.isJumpPressed = jumpInput;
+            movementHandler.CurrentMovementInput = movementInput;
+            movementHandler.IsJumpPressed = jumpInput;
 
-            fightingSystem.lightPunch = lightPunch;
-            fightingSystem.heavyPunch = heavyPunch;
-            fightingSystem.blockingPunch = blockingPunch;
+            fightingSystem.LightPunch = lightPunch;
+            fightingSystem.HeavyPunch = heavyPunch;
+            fightingSystem.BlockingPunch = blockingPunch;
         }
 
     }

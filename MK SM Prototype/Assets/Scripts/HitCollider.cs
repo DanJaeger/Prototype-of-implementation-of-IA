@@ -8,11 +8,11 @@ namespace GA {
         [SerializeField] string punchName;
         [SerializeField] float damage;
 
-        StateManager states;
+        PlayerMovementHandler movementHandler;
 
         private void Start()
         {
-            states = FindObjectOfType<StateManager>();
+            movementHandler = FindObjectOfType<PlayerMovementHandler>();
         }
 
         private void OnTriggerEnter(Collider other)

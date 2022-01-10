@@ -5,24 +5,28 @@ using UnityEngine;
 namespace GA {
     public class HitCollider : MonoBehaviour
     {
-        [SerializeField] string punchName;
-        [SerializeField] float damage;
-
-        PlayerMovementHandler movementHandler;
-
+        [SerializeField] PunchType punchType;
+        [SerializeField] int damage;
+        [SerializeField] EnemyAnimations getHitAnimation;
+        Punch punch;
         private void Start()
         {
-            movementHandler = FindObjectOfType<PlayerMovementHandler>();
+            punch = new Punch(punchType, damage, getHitAnimation);
         }
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.tag == "Enemy")
             {
-                Enemy enemy = other.GetComponentInParent<Enemy>();
-                Debug.LogFormat("I Hit {0} with {1}", other.name, punchName);
-                enemy.Health -= damage;
-                Debug.LogFormat("Enemy Health: {0}", enemy.Health);
+                Enemy enemyHealth = other.GetComponentInParent<Enemy>();
+                EnemyStateManager enemyStateManager = other.GetComponentInParent<EnemyStateManager>();
+                Animator enemyAnimator = other.GetComponentInParent<Animator>();
+                Debug.LogFormat("I Hit {0} with {1}", other.name, punchType);
+                enemyStateManager.GettingHit = true;
+                enemyAnimator.Play(getHitAnimation.ToString());
+                enemyHealth.Health -= damage;
+
+                Debug.LogFormat("Enemy Health: {0}", enemyHealth.Health);
             }
         }
     }

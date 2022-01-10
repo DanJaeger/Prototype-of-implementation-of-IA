@@ -1,0 +1,30 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ChasingState : EnemyBaseState
+{
+    readonly static ChasingState instance = new ChasingState();
+    ChasingState() { }
+    public static ChasingState Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+    public override void EnterState(EnemyStateManager enemy)
+    {
+        //Look at target
+    }
+
+    public override void ExitState(EnemyStateManager enemy)
+    {
+        //Attack target or start patrolling
+    }
+
+    public override void UpdateState(EnemyStateManager enemy)
+    {
+        enemy.Chase();
+    }
+}

@@ -11,7 +11,7 @@ namespace GA
 
         private void Start()
         {
-            health = 20;
+            health = 100;
         }
 
         private void Update()

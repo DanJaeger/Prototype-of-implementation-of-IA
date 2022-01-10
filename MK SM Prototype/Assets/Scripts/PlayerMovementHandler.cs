@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 namespace GA {
@@ -42,13 +43,14 @@ namespace GA {
         int isWalkingHash;
         int isJumpingHash;
 
+        public GameObject ActiveModel { get => activeModel; }
+        public Rigidbody Rb { get => rb; }
+        public Animator Anim { get => anim; }
         public Vector2 CurrentMovementInput { get => currentMovementInput; set => currentMovementInput = value; }
         public bool IsJumpPressed { get => isJumpPressed; set => isJumpPressed = value; }
-        public GameObject ActiveModel { get => activeModel;}
-        public Rigidbody Rb { get => rb;}
-        public Animator Anim { get => anim;}
+        public bool IsJumpAnimating { get => isJumpAnimating;}
 
-        private void Start()
+        void Start()
         {
             Init();
         }
@@ -109,6 +111,7 @@ namespace GA {
 
         void HandleMovement()
         {
+            currentMovementInput.Normalize();
             currentMovement.x = currentMovementInput.x;
             currentMovement.z = currentMovementInput.y;
 
@@ -171,29 +174,30 @@ namespace GA {
         void HandleRotation()
         {
             Vector3 positionToLookAt;
-            //The change in position our character should point to 
+
             positionToLookAt.x = currentMovement.x;
             positionToLookAt.y = 0;
             positionToLookAt.z = currentMovement.z;
-            //The current rotation of our character
+
             Quaternion currentRotation = transform.rotation;
-            //Creates  new rotation based on where the player is currently pressing 
-            if (positionToLookAt != Vector3.zero)
+
+            if (CanRotateWhileFighting() || FightingSystem.isBlocking)
+            {
+                GameObject closestEnemy = enemyDetection.GetClosestEnemy();
+                if (closestEnemy != null)
+                {
+                    transform.DOLookAt(closestEnemy.transform.position, 0.15f);
+                }
+            }else if (positionToLookAt != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(positionToLookAt);
-                transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationSpeed * Time.deltaTime);
-            }else if (CanRotateWhileFighting())
-            {
-                Vector3 targetDirection = enemyDetection.GetTargetDirection();
-                targetDirection.y = 0;
-                Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
                 transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationSpeed * Time.deltaTime);
             }
         }
 
         bool CanRotateWhileFighting()
         {
-            if (FightingSystem.isFighting && EnemyDetection.enemyInRadius && enemyDetection.EnemyInFieldOfView())
+            if (FightingSystem.isFighting && enemyDetection.GetClosestEnemy() != null)
                 return true;
             else
                 return false;
@@ -226,10 +230,18 @@ namespace GA {
             }
         }
 
-        public void MoveForwardWhilePunching(float deltaTime)
+        public void MoveTowardsTarget()
         {
-            characterController.Move(transform.forward * (movementVelocity/2) * deltaTime);
+            if(enemyDetection.GetClosestEnemy() != null) {
+                GameObject currentEnemy = enemyDetection.GetClosestEnemy();
+                transform.DOMove(TargetOffset(currentEnemy.transform), 0.4f);
+            }
         }
-
+        Vector3 TargetOffset(Transform target)
+        {
+            Vector3 position;
+            position = target.position;
+            return Vector3.MoveTowards(position, transform.position, .85f);
+        }
     }
 }

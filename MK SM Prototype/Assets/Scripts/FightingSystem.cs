@@ -52,12 +52,12 @@ namespace GA
 
         void Tick()
         {
-            if (lightPunch && !isBlocking)
+            if (lightPunch && !isBlocking && !movementHandler.IsJumpAnimating)
             {
                 StartLightCombo();
             }
         
-            if (heavyPunch && !isBlocking)
+            if (heavyPunch && !isBlocking && !movementHandler.IsJumpAnimating)
             {
                 StartHeavyPunch();
             }
@@ -70,7 +70,8 @@ namespace GA
 
             if (canIMove)
             {
-                StartCoroutine(MoveForwardWhilePunching(Time.deltaTime));
+                movementHandler.MoveTowardsTarget();
+                canIMove = false;
             }
         }
 
@@ -144,12 +145,5 @@ namespace GA
                 isFighting = false;
             }
         } 
-
-        IEnumerator MoveForwardWhilePunching(float deltaTime)
-        {
-            movementHandler.MoveForwardWhilePunching(deltaTime);
-            yield return new WaitForSeconds(0.15f);
-            canIMove = false;
-        }
     }
 }

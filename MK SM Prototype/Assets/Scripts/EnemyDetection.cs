@@ -1,71 +1,66 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace GA { 
+namespace GA
+{
     public class EnemyDetection : MonoBehaviour
     {
-        [SerializeField] LayerMask enemyLayers;
-        Transform playerTransform = null;
+        [SerializeField] LayerMask enemyMask;
+        [SerializeField] LayerMask obstacleMask;
 
-        const float detectionRadius = 4.0f;
-        const float viewAngle = 80.0f;
-        float distanceToPunch;
-
-        public static bool enemyInRadius = false;
         GameObject closestEnemy = null;
-        void Start()
-        {
-            playerTransform = GetComponentInParent<PlayerMovementHandler>().transform;
 
-            distanceToPunch = detectionRadius * 2.5f;
-        }
+        const float viewRadius = 5.0f;
+        const float viewAngle = 75.0f;
+
+        bool enemyInRadius = false;
 
         void Update()
         {
-            CheckForEnemyInRadius();
+            FindVisibleTargets();
         }
-        void CheckForEnemyInRadius()
-        {
-            float distanceToClosestEnemy = Mathf.Infinity;
-            Collider[] enemiesClose = Physics.OverlapSphere(playerTransform.position, detectionRadius, enemyLayers);
 
-            foreach (Collider currentEnemy in enemiesClose)
+        public void FindVisibleTargets()
+        {
+            Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, enemyMask);
+
+            float distanceToClosestEnemy = Mathf.Infinity;
+
+            for (int i = 0; i < targetsInViewRadius.Length; i++)
             {
-                float distanceToEnemy = (currentEnemy.transform.position - playerTransform.position).sqrMagnitude;
-                if (distanceToEnemy < distanceToClosestEnemy)
+                Transform target = targetsInViewRadius[i].transform;
+                Vector3 directionToTarget = (target.position - transform.position).normalized;
+                if (Vector3.Angle(transform.forward, directionToTarget) < viewAngle)
                 {
-                    distanceToClosestEnemy = distanceToEnemy;
-                    closestEnemy = currentEnemy.gameObject;
+                    float distanceToTarget = Vector3.Distance(transform.position, target.position);
+
+                    if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask))
+                    {
+                        if (distanceToTarget < distanceToClosestEnemy)
+                        {
+                            distanceToClosestEnemy = distanceToTarget;
+                            closestEnemy = target.gameObject;
+                        }
+                        enemyInRadius = (distanceToClosestEnemy <= viewRadius) ? true : false;
+                    }
+                    else
+                    {
+                        closestEnemy = null;
+                    }
                 }
-                enemyInRadius = (distanceToClosestEnemy <= distanceToPunch) ? true : false;
+                else
+                {
+                    closestEnemy = null;
+                }
             }
         }
-        public Vector3 GetTargetDirection()
+
+        public GameObject GetClosestEnemy()
         {
-            Vector3 targetDirection = Vector3.zero;
-
-            targetDirection = (closestEnemy != null) ? closestEnemy.transform.position - playerTransform.position : 
-                playerTransform.forward;
-
-            return targetDirection;
-        }
-
-        public bool EnemyInFieldOfView()
-        {
-            float angle = Vector3.Angle(playerTransform.forward, GetTargetDirection());
-            if (angle < viewAngle)
-                return true;
+            if (enemyInRadius)
+                return closestEnemy;
             else
-                return false;    
+                return null;
         }
-
-        private void OnDrawGizmosSelected()
-        {
-            if(closestEnemy != null && enemyInRadius)
-                Gizmos.DrawLine(playerTransform.position, closestEnemy.transform.position);
-            
-        }
-        
-
     }
 }

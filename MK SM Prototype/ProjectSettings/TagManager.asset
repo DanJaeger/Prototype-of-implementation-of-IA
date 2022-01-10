@@ -16,15 +16,15 @@ TagManager:
   - Water
   - UI
   - Ground
-  - PushBox
+  - Player
+  - Enemy
   - HurtBox
   - HitBox
+  - Obstacle
+  - 
+  - 
+  - 
   - Postprocessing
-  - 
-  - 
-  - 
-  - 
-  - 
   - 
   - 
   - 

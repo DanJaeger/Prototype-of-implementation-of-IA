@@ -5,6 +5,8 @@ namespace GA
 {
     public class EnemyDetection : MonoBehaviour
     {
+        FieldOfView fov;
+
         [SerializeField] LayerMask enemyMask;
         [SerializeField] LayerMask obstacleMask;
 
@@ -14,10 +16,18 @@ namespace GA
         const float viewAngle = 75.0f;
 
         bool enemyInRadius = false;
+        private void Start()
+        {
+            fov = GetComponent<FieldOfView>();
+        }
 
         void Update()
         {
             FindVisibleTargets();
+
+            fov.viewRadius = viewRadius;
+            fov.viewAngle = viewAngle;
+            fov.closestTarget = closestEnemy;
         }
 
         public void FindVisibleTargets()

@@ -9,10 +9,12 @@ public class PlayerDetection : MonoBehaviour
     [SerializeField] LayerMask targetMask;
     [SerializeField] LayerMask obstacleMask;
 
-    GameObject target = null;
+    GameObject player = null;
 
     const float viewRadius = 5.0f;
     const float viewAngle = 75.0f;
+
+    public GameObject Player { get => player; set => player = value; }
 
     private void Start()
     {
@@ -25,7 +27,7 @@ public class PlayerDetection : MonoBehaviour
 
         fov.viewRadius = viewRadius;
         fov.viewAngle = viewAngle;
-        fov.closestTarget = target;
+        fov.closestTarget = player;
     }
 
     public void FindVisibleTargets()
@@ -47,22 +49,18 @@ public class PlayerDetection : MonoBehaviour
                     if (distanceToTarget < distanceToClosestEnemy)
                     {
                         distanceToClosestEnemy = distanceToTarget;
-                        this.target = target.gameObject;
+                        player = target.gameObject;
                     }
                 }
                 else
                 {
-                    this.target = null;
+                    player = null;
                 }
             }
             else
             {
-                this.target = null;
+                player = null;
             }
         }
-    }
-    public GameObject GetTarget()
-    {
-        return target;
     }
 }

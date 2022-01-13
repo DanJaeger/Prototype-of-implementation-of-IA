@@ -20,13 +20,14 @@ public class PatrollingState : EnemyBaseState
 
     public override void ExitState(EnemyStateManager enemy)
     {
-        //ChangeState to Chasing
+        //DO SOMETHING
     }
 
     public override void UpdateState(EnemyStateManager enemy)
     {
         enemy.Patrol();
-        if (enemy.CanChase())
+        enemy.CheckIfCanChase();
+        if (!enemy.PlayerIsOutOfView)
             enemy.ChangeState(ChasingState.Instance);
     }
 }

@@ -13,16 +13,22 @@ public class EnemyStateManager : MonoBehaviour
     [SerializeField] Transform[] patrolPoints;
     int currentPatrolPointsIndex = 0;
 
-    const float viewAngle = 90.0f;
     #endregion
 
     float movementSpeed = 3.0f;
     float rotationSpeed = 10.0f;
     Vector3 movementDirection = Vector3.zero;
 
+    GameObject playerGameObject = null;
     Transform playerTransform;
     bool gettingHit = false;
+    bool playerIsOutOfView = true;
+    float timer = 0;
+
+    public GameObject PlayerGameObject { get => playerGameObject; }
     public bool GettingHit { set => gettingHit = value; }
+    public bool PlayerIsOutOfView { get => playerIsOutOfView;}
+
     void Start()
     {
         if (currentState == null)
@@ -31,7 +37,6 @@ public class EnemyStateManager : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         playerDetection = GetComponent<PlayerDetection>();
-
     }
 
     void Update()
@@ -41,8 +46,10 @@ public class EnemyStateManager : MonoBehaviour
             HandleRotation();
         }
 
-        if(playerDetection.GetTarget() !=null)
-            playerTransform = playerDetection.GetTarget().transform;
+        playerGameObject = playerDetection.Player;
+        if(playerGameObject != null)
+            playerTransform = playerGameObject.transform;
+
     }
     public void ChangeState(EnemyBaseState newState)
     {
@@ -68,24 +75,35 @@ public class EnemyStateManager : MonoBehaviour
             characterController.Move(movementDirection * movementSpeed * Time.deltaTime);
         }
     }
-    public bool CanChase()
+    public void CheckIfCanChase()
     {
-        if (playerDetection.GetTarget() != null)
-            return true;
-        else
-            return false;
+        if (playerGameObject != null) {
+            playerIsOutOfView = false;
+            timer = 0;
+        }
+    }
+
+    public void PlayerOutOfView()
+    {
+        timer += Time.deltaTime;
+        int seconds = ((int)timer % 60);
+        if(seconds >= 2) {
+            Debug.Log("Seconds out of view: " + seconds);
+            playerIsOutOfView = true;
+        }
     }
     Vector3 GetPlayerDirection()
     {
         Vector3 targetDirection = Vector3.zero;
 
-        targetDirection = (playerDetection.GetTarget() != null) ? 
+        targetDirection = (playerGameObject != null) ? 
             playerTransform.position - transform.position :
             transform.forward;
         targetDirection.Normalize();
 
         return targetDirection;
     }
+
     void HandleRotation()
     {
         Vector3 positionToLookAt;

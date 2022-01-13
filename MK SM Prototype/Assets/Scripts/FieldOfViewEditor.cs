@@ -22,8 +22,8 @@ public class FieldOfViewEditor : Editor
 
         Handles.color = Color.red;
 
-        if(fov.closestTarget != null)
-            Handles.DrawLine(fov.transform.position, fov.closestTarget.transform.position);
+        if (fov.closestTarget != null)
+            Handles.DrawWireArc(fov.closestTarget.transform.position, Vector3.up, Vector3.forward, 360, 1);
         
     }
 }

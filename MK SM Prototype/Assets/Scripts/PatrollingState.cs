@@ -27,6 +27,7 @@ public class PatrollingState : EnemyBaseState
     {
         enemy.Patrol();
         enemy.CheckIfCanChase();
+
         if (!enemy.PlayerIsOutOfView)
             enemy.ChangeState(ChasingState.Instance);
     }

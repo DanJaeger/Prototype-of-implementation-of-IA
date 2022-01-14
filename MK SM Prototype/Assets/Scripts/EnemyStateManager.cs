@@ -81,13 +81,15 @@ public class EnemyStateManager : MonoBehaviour
             playerIsOutOfView = false;
             timer = 0;
         }
+        
     }
 
     public void PlayerOutOfView()
     {
         timer += Time.deltaTime;
         int seconds = ((int)timer % 60);
-        if(seconds >= 2) {
+        Debug.LogFormat("Seconds: {0}", seconds);
+        if(seconds >= 4) {
             Debug.Log("Seconds out of view: " + seconds);
             playerIsOutOfView = true;
         }

@@ -14,7 +14,7 @@ public class PlayerDetection : MonoBehaviour
     const float viewRadius = 5.0f;
     const float viewAngle = 75.0f;
 
-    public GameObject Player { get => player; set => player = value; }
+    public GameObject Player { get => player;}
 
     private void Start()
     {
@@ -34,8 +34,6 @@ public class PlayerDetection : MonoBehaviour
     {
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
 
-        float distanceToClosestEnemy = Mathf.Infinity;
-
         for (int i = 0; i < targetsInViewRadius.Length; i++)
         {
             Transform target = targetsInViewRadius[i].transform;
@@ -46,10 +44,13 @@ public class PlayerDetection : MonoBehaviour
 
                 if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask))
                 {
-                    if (distanceToTarget < distanceToClosestEnemy)
+                    if (distanceToTarget < viewRadius)
                     {
-                        distanceToClosestEnemy = distanceToTarget;
                         player = target.gameObject;
+                    }
+                    else
+                    {
+                        player = null;
                     }
                 }
                 else

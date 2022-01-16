@@ -57,6 +57,7 @@
     <Compile Include="Assets\Scripts\EnemyStateManager.cs" />
     <Compile Include="Assets\Scripts\HitCollider.cs" />
     <Compile Include="Assets\Scripts\CameraManager.cs" />
+    <Compile Include="Assets\Scripts\PlayerDetection.cs" />
     <Compile Include="Assets\Scripts\EnemyDetection.cs" />
     <Compile Include="Assets\Scripts\FightingSystem.cs" />
     <Compile Include="Assets\Scripts\PunchType.cs" />
@@ -66,12 +67,10 @@
     <Compile Include="Assets\Scripts\PatrollingState.cs" />
     <Compile Include="Assets\Scripts\EnemyAnimations.cs" />
     <Compile Include="Assets\Scripts\AttackingState.cs" />
-    <Compile Include="Assets\Scripts\Enemy.cs" />
     <Compile Include="Assets\Scripts\ChasingState.cs" />
     <Compile Include="Assets\Scripts\Punch.cs" />
     <Compile Include="Assets\Scripts\FieldOfView.cs" />
     <Compile Include="Assets\Scripts\BorderDetection.cs" />
-    <Compile Include="Assets\Scripts\PlayerDetection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

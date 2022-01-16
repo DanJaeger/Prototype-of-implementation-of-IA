@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerDetection : MonoBehaviour
 {
     FieldOfView fov;
+    EnemyStateManager enemyStateManager;
 
     [SerializeField] LayerMask targetMask;
     [SerializeField] LayerMask obstacleMask;
@@ -19,6 +20,7 @@ public class PlayerDetection : MonoBehaviour
     private void Start()
     {
         fov = GetComponent<FieldOfView>();
+        enemyStateManager = GetComponent<EnemyStateManager>();
     }
 
     void Update()
@@ -38,6 +40,12 @@ public class PlayerDetection : MonoBehaviour
         {
             Transform target = targetsInViewRadius[i].transform;
             Vector3 directionToTarget = (target.position - transform.position).normalized;
+
+            if (enemyStateManager.GettingHit) { 
+                player = target.gameObject;
+                return;
+            }
+
             if (Vector3.Angle(transform.forward, directionToTarget) < viewAngle)
             {
                 float distanceToTarget = Vector3.Distance(transform.position, target.position);

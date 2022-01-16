@@ -16,7 +16,7 @@ namespace GA {
         #endregion
 
         [Header(header:"Movement Settings")]
-        const float movementVelocity = 7.0f;
+        const float movementVelocity = 5.0f;
         const float rotationSpeed = 10.0f;
         [HideInInspector] public bool isMovingRight = false;
         [HideInInspector] public bool isMovingLeft = false;

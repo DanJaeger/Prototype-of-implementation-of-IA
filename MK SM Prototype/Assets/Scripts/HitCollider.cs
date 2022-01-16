@@ -18,15 +18,14 @@ namespace GA {
         {
             if (other.tag == "Enemy")
             {
-                Enemy enemyHealth = other.GetComponentInParent<Enemy>();
                 EnemyStateManager enemyStateManager = other.GetComponentInParent<EnemyStateManager>();
                 Animator enemyAnimator = other.GetComponentInParent<Animator>();
                 Debug.LogFormat("I Hit {0} with {1}", other.name, punchType);
                 enemyStateManager.GettingHit = true;
+                enemyStateManager.Health -= damage;
                 enemyAnimator.Play(getHitAnimation.ToString());
-                enemyHealth.Health -= damage;
 
-                Debug.LogFormat("Enemy Health: {0}", enemyHealth.Health);
+                Debug.LogFormat("Enemy Health: {0}", enemyStateManager.Health);
             }
         }
     }

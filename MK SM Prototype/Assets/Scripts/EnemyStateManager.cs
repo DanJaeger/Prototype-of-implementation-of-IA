@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class EnemyStateManager : MonoBehaviour
@@ -8,6 +9,8 @@ public class EnemyStateManager : MonoBehaviour
     CharacterController characterController;
     Animator animator;
     PlayerDetection playerDetection;
+
+    private float health;
 
     #region PatrollingVariables
     [SerializeField] Transform[] patrolPoints;
@@ -26,8 +29,9 @@ public class EnemyStateManager : MonoBehaviour
     float timer = 0;
 
     public GameObject PlayerGameObject { get => playerGameObject; }
-    public bool GettingHit { set => gettingHit = value; }
-    public bool PlayerIsOutOfView { get => playerIsOutOfView;}
+    public bool PlayerIsOutOfView { get => playerIsOutOfView; }
+    public bool GettingHit { get => gettingHit; set => gettingHit = value; }
+    public float Health { get => health; set => health = value; }
 
     void Start()
     {
@@ -37,19 +41,32 @@ public class EnemyStateManager : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         playerDetection = GetComponent<PlayerDetection>();
+
+        health = 100;
     }
 
     void Update()
     {
-        if (!gettingHit) { 
-            currentState.UpdateState(this);
-            HandleRotation();
-        }
-
         playerGameObject = playerDetection.Player;
         if(playerGameObject != null)
             playerTransform = playerGameObject.transform;
 
+        if (!gettingHit)
+        {
+            currentState.UpdateState(this);
+            HandleRotation();
+        }
+        else
+        {
+            if(playerGameObject != null)
+                transform.DOLookAt(playerTransform.position, 0.2f);
+        }
+
+        if (health <= 0)
+        {
+            Debug.Log("AHhhhhhhhhhhhhhhhhhhhh");
+            Destroy(this.gameObject);
+        }
     }
     public void ChangeState(EnemyBaseState newState)
     {
@@ -81,16 +98,13 @@ public class EnemyStateManager : MonoBehaviour
             playerIsOutOfView = false;
             timer = 0;
         }
-        
     }
 
     public void PlayerOutOfView()
     {
         timer += Time.deltaTime;
         int seconds = ((int)timer % 60);
-        Debug.LogFormat("Seconds: {0}", seconds);
         if(seconds >= 4) {
-            Debug.Log("Seconds out of view: " + seconds);
             playerIsOutOfView = true;
         }
     }
@@ -124,7 +138,7 @@ public class EnemyStateManager : MonoBehaviour
     }
     public void UpdateAnimations()
     {
-        if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.9f)
+        if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.8f)
             gettingHit = false;
         else
             Debug.LogError("Se llamo a la funcion antes de terminar la animacion!");

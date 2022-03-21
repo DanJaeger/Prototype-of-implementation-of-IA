@@ -15,7 +15,7 @@ public class Grid : MonoBehaviour
     int gridSizeX; //Tamano global de la red en X = 50
     int gridSizeY; //Tamano global de la red en Y = 18
 
-    private void Start()
+    private void Awake()
     {
         nodeDiameter = nodeRadius * 2;
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
@@ -29,7 +29,6 @@ public class Grid : MonoBehaviour
         grid = new Node[gridSizeX, gridSizeY];
         Vector3 worldBottomLeft = 
             (transform.position - Vector3.right * gridWorldSize.x/2) - (Vector3.forward * gridWorldSize.y/2);
-        // = (0, 0, 0.5) - (1, 0, 0) * 25 - (0, 0, 1) * 9 = (-25, 0, 12.5) - (0, 0, 9) = (-25, 0, 3.5)
 
         #region Crear nodos en posicion correspondiente
         for (int x = 0; x < gridSizeX; x++)
@@ -80,8 +79,8 @@ public class Grid : MonoBehaviour
 
     public Node GetNodeFromWorldPoint(Vector3 worldPosition)
     {
-        float percentX = (worldPosition.x / gridWorldSize.x) + 0.5f;
-        float percentY = (worldPosition.z / gridWorldSize.y) + 0.5f;
+        float percentX = (worldPosition.x + gridWorldSize.x/2) / gridWorldSize.x;
+        float percentY = (worldPosition.z + gridWorldSize.y/2) / gridWorldSize.y; 
         percentX = Mathf.Clamp01(percentX); 
         percentY = Mathf.Clamp01(percentY);
 

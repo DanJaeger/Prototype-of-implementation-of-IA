@@ -15,7 +15,8 @@ public class PatrollingState : EnemyBaseState
     }
     public override void EnterState(EnemyStateManager enemy)
     {
-        
+        enemy.CurrentTarget = enemy.GetPatrolPoint();
+        enemy.GetPath(enemy.CurrentTarget);
     }
 
     public override void ExitState(EnemyStateManager enemy)

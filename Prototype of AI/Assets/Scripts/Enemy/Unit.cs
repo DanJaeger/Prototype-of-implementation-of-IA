@@ -4,15 +4,22 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    [SerializeField] Transform target;
     int targetIndex;
-
+    [SerializeField] Transform point_1;
+    [SerializeField] Transform point_2;
     float speed = 10;
     Vector3[] path;
 
-    private void Start()
+    public Vector3[] Path { get => path;}
+
+    public void GetPath(Transform target)
     {
         PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+    }
+
+    void Start()
+    {
+        GetPath(point_1);
     }
 
     void OnPathFound(Vector3[] newPath, bool pathSuccessful)
@@ -36,6 +43,7 @@ public class Unit : MonoBehaviour
                 targetIndex++;
                 if (targetIndex >= path.Length)
                 {
+                    GetPath(point_2);
                     yield break;
                 }
                 currentWaypoint = path[targetIndex];

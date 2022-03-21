@@ -49,6 +49,14 @@ public class PlayerMovementHandler : MonoBehaviour
     public bool IsJumpPressed { get => isJumpPressed; set => isJumpPressed = value; }
     public bool IsJumpAnimating { get => isJumpAnimating; }
 
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        characterController = GetComponent<CharacterController>();
+        fightingSystem = GetComponentInChildren<FightingSystem>();
+        enemyDetection = GetComponentInChildren<EnemyDetection>();
+    }
+
     void Start()
     {
         Init();
@@ -58,11 +66,6 @@ public class PlayerMovementHandler : MonoBehaviour
     {
         SetupAnimator();
         SetupJumpVariables();
-
-        rb = GetComponent<Rigidbody>();
-        characterController = GetComponent<CharacterController>();
-        fightingSystem = GetComponentInChildren<FightingSystem>();
-        enemyDetection = GetComponentInChildren<EnemyDetection>();
     }
 
     void SetupAnimator()

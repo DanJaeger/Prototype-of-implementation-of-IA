@@ -34,6 +34,7 @@ public class PlayerDetection : MonoBehaviour
 
     public void FindVisibleTargets()
     {
+        player = null;
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
 
         for (int i = 0; i < targetsInViewRadius.Length; i++)
@@ -56,19 +57,8 @@ public class PlayerDetection : MonoBehaviour
                     {
                         player = target.gameObject;
                     }
-                    else
-                    {
-                        player = null;
-                    }
                 }
-                else
-                {
-                    player = null;
-                }
-            }
-            else
-            {
-                player = null;
+
             }
         }
     }

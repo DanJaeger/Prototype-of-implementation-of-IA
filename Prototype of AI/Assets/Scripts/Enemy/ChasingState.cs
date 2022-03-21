@@ -15,7 +15,8 @@ public class ChasingState : EnemyBaseState
     }
     public override void EnterState(EnemyStateManager enemy)
     {
-        
+        if(enemy.PlayerGameObject != null)
+            enemy.GetPath(enemy.PlayerGameObject.transform);
     }
 
     public override void ExitState(EnemyStateManager enemy)
@@ -27,6 +28,7 @@ public class ChasingState : EnemyBaseState
     {
         enemy.CheckIfCanChase();
         enemy.Chase();
+        enemy.FindNewPath();
 
         if (enemy.PlayerGameObject == null) { 
             enemy.PlayerOutOfView();

@@ -8,8 +8,6 @@ public class Pathfinding : MonoBehaviour
     PathRequestManager pathRequestManager;
     Grid grid;
 
-    [SerializeField] Transform seeker, target;
-
     private void Awake()
     {
         grid = GetComponent<Grid>();
@@ -24,14 +22,13 @@ public class Pathfinding : MonoBehaviour
     IEnumerator FindPath(Vector3 startPosition, Vector3 endPosition)
     {
         Vector3[] wayPoints = new Vector3[0];
-        bool pathSucces = false;
+        bool pathSuccess = false;
 
         Node startNode = grid.GetNodeFromWorldPoint(startPosition);
         Node targetNode = grid.GetNodeFromWorldPoint(endPosition);
 
         if (startNode.Walkable && targetNode.Walkable)
         {
-
             Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
             HashSet<Node> closedSet = new HashSet<Node>();
 
@@ -44,7 +41,7 @@ public class Pathfinding : MonoBehaviour
 
                 if (currentNode == targetNode)
                 {
-                    pathSucces = true;
+                    pathSuccess = true;
                     break;
                 }
 
@@ -77,11 +74,11 @@ public class Pathfinding : MonoBehaviour
             }
         }
         yield return null;
-        if (pathSucces)
+        if (pathSuccess)
         {
             wayPoints = RetracePath(startNode, targetNode);
         }
-        pathRequestManager.FinishProcessingPath(wayPoints, pathSucces);
+        pathRequestManager.FinishProcessingPath(wayPoints, pathSuccess);
     }
 
     Vector3[] RetracePath(Node startNode, Node endNode)

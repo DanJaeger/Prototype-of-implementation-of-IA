@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 
 public class EnemyStateManager : MonoBehaviour
@@ -18,29 +17,47 @@ public class EnemyStateManager : MonoBehaviour
 
     #endregion
 
-    float movementSpeed = 3.0f;
+    [SerializeField] float movementSpeed = 3.0f;
     float rotationSpeed = 10.0f;
     Vector3 movementDirection = Vector3.zero;
+    Vector3 oldPlayerPosition = Vector3.zero;
+    Vector3[] path;
+
 
     GameObject playerGameObject = null;
     Transform playerTransform;
+    Transform currentTarget;
     bool gettingHit = false;
     bool playerIsOutOfView = true;
+    bool followingPath = false;
     float timer = 0;
+    int targetIndex = 0;
 
     public GameObject PlayerGameObject { get => playerGameObject; }
     public bool PlayerIsOutOfView { get => playerIsOutOfView; }
+    public Transform[] PatrolPoints { get => patrolPoints; }
     public bool GettingHit { get => gettingHit; set => gettingHit = value; }
     public float Health { get => health; set => health = value; }
-
-    void Start()
+    public Transform CurrentTarget { get => currentTarget; set => currentTarget = value; }
+    public Transform GetPatrolPoint()
     {
-        if (currentState == null)
-            currentState = PatrollingState.Instance;
+        return patrolPoints[currentPatrolPointsIndex];
+    }
 
+    void Awake()
+    {
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         playerDetection = GetComponent<PlayerDetection>();
+    }
+
+    void Start()
+    {
+        currentTarget = patrolPoints[currentPatrolPointsIndex];
+        GetPath(currentTarget);
+
+        if (currentState == null)
+            currentState = PatrollingState.Instance;
 
         health = 100;
     }
@@ -74,22 +91,100 @@ public class EnemyStateManager : MonoBehaviour
         currentState = newState;
         currentState.EnterState(this);
     }
+    public void GetPath(Transform target)
+    {
+        PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+    }
+    void OnPathFound(Vector3[] newPath, bool pathSuccessful)
+    {
+        if (pathSuccessful)
+        {
+            path = newPath;
+            followingPath = true;
+
+            animator.SetBool("IsWalking", true);
+            StopCoroutine("Move");
+            StartCoroutine("Move");
+        }
+    }
     public void Patrol()
     {
         Transform nextPatrolPoint = patrolPoints[currentPatrolPointsIndex];
-        if (Vector3.Distance(transform.position, nextPatrolPoint.position) < 1)
+        if (transform.position == nextPatrolPoint.position)
         {
+            Debug.Log("Stop Moving");
+            StopCoroutine("Move");
+            animator.SetBool("IsWalking", false);
+
             currentPatrolPointsIndex = (currentPatrolPointsIndex + 1) % patrolPoints.Length;
+            currentTarget = patrolPoints[currentPatrolPointsIndex];
+            GetPath(currentTarget);
         }
-        else
+    }
+    public void Chase()
+    {
+        if (!gettingHit)
         {
-            Vector3 targetPosition = Vector3.Lerp(transform.position, nextPatrolPoint.position, 0.5f);
+            float distanceToTarget = (playerTransform.position - transform.position).sqrMagnitude;
+            if (playerTransform == null || distanceToTarget <= 4)
+            {
+                StopCoroutine("Move");
+                animator.SetBool("IsWalking", false);
+            }
+        }
+    }
+
+    IEnumerator Move()
+    {
+        targetIndex = 0;
+        Vector3 targetPosition = transform.forward;
+        Vector3 currentWaypoint = path[0];
+        Debug.Log(currentWaypoint);
+
+        while (true)
+        {
+            if (followingPath)
+            {
+                if (transform.position == currentWaypoint)
+                {
+                    targetIndex++;
+                    if (targetIndex >= path.Length)
+                    {
+                        followingPath = false;
+                    }
+                    else { 
+                    currentWaypoint = path[targetIndex];
+                    Debug.Log(currentWaypoint);
+                    }
+                }
+                targetPosition = currentWaypoint;
+            }
+            else
+            {
+                targetPosition = currentTarget.position;
+            }
+            
             movementDirection = targetPosition - transform.position;
             movementDirection.Normalize();
             movementDirection.y = 0;
-
             animator.SetBool("IsWalking", true);
-            characterController.Move(movementDirection * movementSpeed * Time.deltaTime);
+
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, movementSpeed * Time.deltaTime);
+            //characterController.Move(movementDirection * movementSpeed * Time.deltaTime);
+            yield return null;
+        }
+    }
+
+    public void FindNewPath()
+    {
+        if (playerGameObject != null)
+        {
+            if (oldPlayerPosition != playerTransform.position)
+            {
+                currentTarget = playerTransform;
+                GetPath(currentTarget);
+                oldPlayerPosition = playerTransform.position;
+            }
         }
     }
     public void CheckIfCanChase()
@@ -140,31 +235,27 @@ public class EnemyStateManager : MonoBehaviour
     }
     public void UpdateAnimations()
     {
-        if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.8f)
-            gettingHit = false;
-        else
-            Debug.LogError("Se llamo a la funcion antes de terminar la animacion!");
+        gettingHit = false;
     }
-    public void Chase()
-    {
-        if (!gettingHit)
-        {
-            float distanceToTarget = (playerTransform.position - transform.position).sqrMagnitude;
-            if (playerTransform != null && distanceToTarget >= 4)
-            {
-                Vector3 targetPosition = Vector3.Lerp(transform.position, playerTransform.position, 0.5f);
-                movementDirection = targetPosition - transform.position;
-                movementDirection.Normalize();
-                movementDirection.y = 0;
-                animator.SetBool("IsWalking", true);
 
-                characterController.Move(movementDirection * movementSpeed * Time.deltaTime);
-            }
-            else
+    void OnDrawGizmos()
+    {
+        if (path != null)
+        {
+            for (int i = targetIndex; i < path.Length; i++)
             {
-                animator.SetBool("IsWalking", false);
+                Gizmos.color = Color.black;
+                Gizmos.DrawCube(path[i], Vector3.one);
+
+                if (i == targetIndex)
+                {
+                    Gizmos.DrawLine(transform.position, path[i]);
+                }
+                else
+                {
+                    Gizmos.DrawLine(path[i - 1], path[i]);
+                }
             }
         }
     }
-
 }

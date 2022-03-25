@@ -10,6 +10,7 @@ public class EnemyStateManager : MonoBehaviour
     PlayerDetection playerDetection;
 
     private float health;
+    [SerializeField] GameObject player;
 
     #region PatrollingVariables
     [SerializeField] Transform[] patrolPoints;
@@ -23,7 +24,6 @@ public class EnemyStateManager : MonoBehaviour
     Vector3 oldPlayerPosition = Vector3.zero;
     Vector3[] path;
 
-
     GameObject playerGameObject = null;
     Transform playerTransform;
     Transform currentTarget;
@@ -33,7 +33,10 @@ public class EnemyStateManager : MonoBehaviour
     float timer = 0;
     int targetIndex = 0;
 
-    public GameObject PlayerGameObject { get => playerGameObject; }
+    const float pathUpdateMoveThreshold = 1.0f;
+    const float minPathUpdateTime = 0.2f;
+
+    public GameObject Player { get => playerGameObject; }
     public bool PlayerIsOutOfView { get => playerIsOutOfView; }
     public Transform[] PatrolPoints { get => patrolPoints; }
     public bool GettingHit { get => gettingHit; set => gettingHit = value; }
@@ -66,7 +69,7 @@ public class EnemyStateManager : MonoBehaviour
     {
         playerGameObject = playerDetection.Player;
         if (playerGameObject != null)
-            playerTransform = playerGameObject.transform;
+            playerTransform = playerGameObject.transform; 
 
         if (!gettingHit)
         {
@@ -75,7 +78,7 @@ public class EnemyStateManager : MonoBehaviour
         }
         else
         {
-            if (playerGameObject != null)
+            if (playerTransform != null)
                 transform.DOLookAt(playerTransform.position, 0.2f);
         }
 
@@ -102,17 +105,29 @@ public class EnemyStateManager : MonoBehaviour
             path = newPath;
             followingPath = true;
 
-            animator.SetBool("IsWalking", true);
-            StopCoroutine("Move");
-            StartCoroutine("Move");
+            if (currentState == ChasingState.Instance) {
+                if (CanChase())
+                {
+                    animator.SetBool("IsWalking", true);
+                    StopCoroutine("Move");
+                    StartCoroutine("Move");
+                }
+            }
+            else
+            {
+                animator.SetBool("IsWalking", true);
+                StopCoroutine("Move");
+                StartCoroutine("Move");
+            }
         }
     }
+
     public void Patrol()
     {
         Transform nextPatrolPoint = patrolPoints[currentPatrolPointsIndex];
-        if (transform.position == nextPatrolPoint.position)
+        float distanceToNextPoint = (nextPatrolPoint.position - transform.position).sqrMagnitude;
+        if (distanceToNextPoint < 0.1f)
         {
-            Debug.Log("Stop Moving");
             StopCoroutine("Move");
             animator.SetBool("IsWalking", false);
 
@@ -125,68 +140,84 @@ public class EnemyStateManager : MonoBehaviour
     {
         if (!gettingHit)
         {
-            float distanceToTarget = (playerTransform.position - transform.position).sqrMagnitude;
-            if (playerTransform == null || distanceToTarget <= 4)
+            if (!CanChase())
             {
                 StopCoroutine("Move");
                 animator.SetBool("IsWalking", false);
             }
         }
     }
+    bool CanChase()
+    {
+        float distanceToTarget = (playerTransform.position - transform.position).sqrMagnitude;
+
+        if (playerTransform == null || distanceToTarget <= 4)
+            return false;
+        else
+            return true;
+    }
 
     IEnumerator Move()
     {
         targetIndex = 0;
         Vector3 targetPosition = transform.forward;
-        Vector3 currentWaypoint = path[0];
-        Debug.Log(currentWaypoint);
+
+        if (path.Length > 0) {
+            Vector3 currentWaypoint = path[0];
+
+            while (true)
+            {
+                if (followingPath)
+                {
+                    float distanceToCurrentPoint = (currentWaypoint - transform.position).sqrMagnitude;
+                    if (distanceToCurrentPoint < 0.1f)
+                    {
+                        targetIndex++;
+                        if (targetIndex >= path.Length)
+                        {
+                            followingPath = false;
+                        }
+                        else
+                        {
+                            currentWaypoint = path[targetIndex];
+                        }
+                    }
+                    targetPosition = currentWaypoint;
+                }
+                else
+                {
+                    targetPosition = currentTarget.position;
+                }
+                movementDirection = targetPosition - transform.position;
+                movementDirection.Normalize();
+                movementDirection.y = 0;
+
+                animator.SetBool("IsWalking", true);
+
+                characterController.Move(movementDirection * movementSpeed * Time.deltaTime);
+
+                yield return null;
+            }
+        }
+    }
+    public IEnumerator UpdatePath()
+    {
+        PathRequestManager.RequestPath(transform.position, player.transform.position, OnPathFound);
+
+        float sqrMoveThreshold = pathUpdateMoveThreshold * pathUpdateMoveThreshold;
+        Vector3 targetPosOld = player.transform.position;
 
         while (true)
         {
-            if (followingPath)
+            yield return new WaitForSeconds(minPathUpdateTime);
+            if ((player.transform.position - targetPosOld).sqrMagnitude > sqrMoveThreshold)
             {
-                if (transform.position == currentWaypoint)
-                {
-                    targetIndex++;
-                    if (targetIndex >= path.Length)
-                    {
-                        followingPath = false;
-                    }
-                    else { 
-                    currentWaypoint = path[targetIndex];
-                    Debug.Log(currentWaypoint);
-                    }
-                }
-                targetPosition = currentWaypoint;
-            }
-            else
-            {
-                targetPosition = currentTarget.position;
-            }
-            
-            movementDirection = targetPosition - transform.position;
-            movementDirection.Normalize();
-            movementDirection.y = 0;
-            animator.SetBool("IsWalking", true);
-
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, movementSpeed * Time.deltaTime);
-            //characterController.Move(movementDirection * movementSpeed * Time.deltaTime);
-            yield return null;
-        }
-    }
-
-    public void FindNewPath()
-    {
-        if (playerGameObject != null)
-        {
-            if (oldPlayerPosition != playerTransform.position)
-            {
-                currentTarget = playerTransform;
-                GetPath(currentTarget);
-                oldPlayerPosition = playerTransform.position;
+                PathRequestManager.RequestPath(transform.position, player.transform.position, OnPathFound);
+                targetPosOld = player.transform.position;
             }
         }
     }
+
     public void CheckIfCanChase()
     {
         if (playerGameObject != null)
@@ -199,8 +230,7 @@ public class EnemyStateManager : MonoBehaviour
     public void PlayerOutOfView()
     {
         timer += Time.deltaTime;
-        int seconds = ((int)timer % 60);
-        if (seconds >= 4)
+        if (timer >= 4)
         {
             playerIsOutOfView = true;
         }
@@ -209,7 +239,7 @@ public class EnemyStateManager : MonoBehaviour
     {
         Vector3 targetDirection = Vector3.zero;
 
-        targetDirection = (playerGameObject != null) ?
+        targetDirection = (playerTransform != null) ?
             playerTransform.position - transform.position :
             transform.forward;
         targetDirection.Normalize();

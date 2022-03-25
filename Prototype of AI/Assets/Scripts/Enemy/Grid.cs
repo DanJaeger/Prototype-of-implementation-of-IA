@@ -91,6 +91,7 @@ public class Grid : MonoBehaviour
     }
 
     public List<Node> path;
+    public Node targetNode;
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
@@ -117,6 +118,10 @@ public class Grid : MonoBehaviour
                     if (path.Contains(node))
                     {
                         Gizmos.color = Color.green;
+                    }
+                    if(node == targetNode)
+                    {
+                        Gizmos.color = Color.blue;
                     }
                 }
                 Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - 0.1f));

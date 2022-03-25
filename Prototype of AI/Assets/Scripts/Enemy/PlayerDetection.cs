@@ -10,7 +10,7 @@ public class PlayerDetection : MonoBehaviour
     [SerializeField] LayerMask targetMask;
     [SerializeField] LayerMask obstacleMask;
 
-    GameObject player = null;
+    [SerializeField] GameObject player = null;
 
     const float viewRadius = 5.0f;
     const float viewAngle = 75.0f;

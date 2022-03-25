@@ -15,22 +15,20 @@ public class ChasingState : EnemyBaseState
     }
     public override void EnterState(EnemyStateManager enemy)
     {
-        if(enemy.PlayerGameObject != null)
-            enemy.GetPath(enemy.PlayerGameObject.transform);
+        enemy.StartCoroutine("UpdatePath");
     }
 
     public override void ExitState(EnemyStateManager enemy)
     {
-        //Attack target or start patrolling
+        enemy.StopCoroutine("UpdatePath");
     }
 
     public override void UpdateState(EnemyStateManager enemy)
     {
         enemy.CheckIfCanChase();
         enemy.Chase();
-        enemy.FindNewPath();
 
-        if (enemy.PlayerGameObject == null) { 
+        if (enemy.Player == null) { 
             enemy.PlayerOutOfView();
             if (enemy.PlayerIsOutOfView)
                 enemy.ChangeState(PatrollingState.Instance);

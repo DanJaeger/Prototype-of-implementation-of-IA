@@ -5,19 +5,20 @@ using UnityEngine;
 public class Grid : MonoBehaviour
 {
     [SerializeField] bool onlyDisplayPathGizmos;
-    [SerializeField] Vector2 gridWorldSize = Vector2.zero; //Tamano global de la red = 50 x 18
-    [SerializeField] float nodeRadius = 0.0f; // Tamano de los nodos = 0.5f
+    [SerializeField] Vector2 gridWorldSize = Vector2.zero; 
+    [SerializeField] float nodeRadius = 0.5f;
     [SerializeField] LayerMask unwalkableMask; 
     
     Node[,] grid;
 
     float nodeDiameter;
-    int gridSizeX; //Tamano global de la red en X = 50
-    int gridSizeY; //Tamano global de la red en Y = 18
+    int gridSizeX;
+    int gridSizeY; 
 
     private void Awake()
     {
         nodeDiameter = nodeRadius * 2;
+
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
 
@@ -29,7 +30,7 @@ public class Grid : MonoBehaviour
         grid = new Node[gridSizeX, gridSizeY];
         Vector3 worldBottomLeft = 
             (transform.position - Vector3.right * gridWorldSize.x/2) - (Vector3.forward * gridWorldSize.y/2);
-
+        Debug.Log(worldBottomLeft);
         #region Crear nodos en posicion correspondiente
         for (int x = 0; x < gridSizeX; x++)
         {
@@ -64,8 +65,8 @@ public class Grid : MonoBehaviour
                 if (x == 0 && y == 0)
                     continue;
 
-                int checkX = node.GridX + x;
-                int checkY = node.GridY + y;
+                int checkX = node.GridPositionX + x;
+                int checkY = node.GridPositionY + y;
 
                 if(checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
                 {
@@ -79,54 +80,59 @@ public class Grid : MonoBehaviour
 
     public Node GetNodeFromWorldPoint(Vector3 worldPosition)
     {
-        float percentX = (worldPosition.x + gridWorldSize.x/2) / gridWorldSize.x;
-        float percentY = (worldPosition.z + gridWorldSize.y/2) / gridWorldSize.y; 
+        float percentX = (worldPosition.x / gridWorldSize.x) + 0.5f;
+        float percentY = (worldPosition.z / gridWorldSize.y) + 0.5f; 
+
         percentX = Mathf.Clamp01(percentX); 
         percentY = Mathf.Clamp01(percentY);
 
-        int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
-        int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
+        int x = Mathf.FloorToInt(Mathf.Clamp(gridSizeX * percentX, 0, gridSizeX - 1));
+        int y = Mathf.FloorToInt(Mathf.Clamp(gridSizeY * percentY, 0, gridSizeY - 1));
 
         return grid[x, y];
     }
 
-    public List<Node> path;
-    public Node targetNode;
+    public Vector3[] path;
+    public Node targetPosition;
     private void OnDrawGizmos()
     {
+        List<Node> pathNodes = new List<Node>();
+
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+
+        if (path != null)
+        {
+            for (int i = 0; i < path.Length; i++)
+            {
+                pathNodes.Add(GetNodeFromWorldPoint(path[i]));
+            }
+        }
 
         if (onlyDisplayPathGizmos)
         {
-            if(path != null)
+            if(pathNodes != null)
             {
-                foreach(Node node in path)
+                foreach(Node node in pathNodes)
                 {
+                    Debug.Log(node);
                     Gizmos.color = Color.green;
                     Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - 0.1f));
                 }
             }
         }
-        else { 
-        if(grid != null)
-        {
-            foreach(Node node in grid)
+        else {
+            if (grid != null)
             {
-                Gizmos.color = (node.Walkable) ? Color.white : Color.red;
-                if(path != null)
+                foreach (Node node in grid)
                 {
-                    if (path.Contains(node))
+                    Gizmos.color = (node.Walkable) ? Color.white : Color.red;
+                    if (pathNodes.Contains(node))
                     {
                         Gizmos.color = Color.green;
                     }
-                    if(node == targetNode)
-                    {
-                        Gizmos.color = Color.blue;
-                    }
+                    Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - 0.1f));
                 }
-                Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - 0.1f));
             }
-        }
         }
     }
 

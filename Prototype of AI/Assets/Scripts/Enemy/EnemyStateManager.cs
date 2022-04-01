@@ -8,6 +8,7 @@ public class EnemyStateManager : MonoBehaviour
     CharacterController characterController;
     Animator animator;
     PlayerDetection playerDetection;
+    Grid grid;
 
     private float health;
     [SerializeField] GameObject player;
@@ -21,7 +22,6 @@ public class EnemyStateManager : MonoBehaviour
     [SerializeField] float movementSpeed = 3.0f;
     float rotationSpeed = 10.0f;
     Vector3 movementDirection = Vector3.zero;
-    Vector3 oldPlayerPosition = Vector3.zero;
     Vector3[] path;
 
     GameObject playerGameObject = null;
@@ -52,6 +52,7 @@ public class EnemyStateManager : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         playerDetection = GetComponent<PlayerDetection>();
+        grid = FindObjectOfType<Grid>().GetComponent<Grid>();
     }
 
     void Start()
@@ -103,6 +104,7 @@ public class EnemyStateManager : MonoBehaviour
         if (pathSuccessful)
         {
             path = newPath;
+            grid.path = newPath; 
             followingPath = true;
 
             if (currentState == ChasingState.Instance) {
@@ -268,24 +270,4 @@ public class EnemyStateManager : MonoBehaviour
         gettingHit = false;
     }
 
-    void OnDrawGizmos()
-    {
-        if (path != null)
-        {
-            for (int i = targetIndex; i < path.Length; i++)
-            {
-                Gizmos.color = Color.black;
-                Gizmos.DrawCube(path[i], Vector3.one);
-
-                if (i == targetIndex)
-                {
-                    Gizmos.DrawLine(transform.position, path[i]);
-                }
-                else
-                {
-                    Gizmos.DrawLine(path[i - 1], path[i]);
-                }
-            }
-        }
-    }
 }

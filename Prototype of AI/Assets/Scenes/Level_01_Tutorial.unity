@@ -1389,6 +1389,7 @@ MonoBehaviour:
   unwalkableMask:
     serializedVersion: 2
     m_Bits: 2048
+  path: []
 --- !u!4 &1549470611
 Transform:
   m_ObjectHideFlags: 0

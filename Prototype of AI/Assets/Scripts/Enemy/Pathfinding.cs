@@ -26,6 +26,7 @@ public class Pathfinding : MonoBehaviour
 
         Node startNode = grid.GetNodeFromWorldPoint(startPosition);
         Node targetNode = grid.GetNodeFromWorldPoint(endPosition);
+        grid.targetPosition = targetNode;
 
         if (startNode.Walkable && targetNode.Walkable)
         {
@@ -99,24 +100,24 @@ public class Pathfinding : MonoBehaviour
     Vector3[] SimplifyPath(List<Node> path)
     {
         List<Vector3> wayPoints = new List<Vector3>();
-        Vector2 directionOld = Vector2.zero;
+        Vector2 oldDirection = Vector2.zero;
 
         for (int i = 1; i < path.Count; i++)
         {
-            Vector2 directionNew = new Vector2(path[i - 1].GridX - path[i].GridX, path[i - 1].GridY - path[i].GridY);
-            if (directionNew != directionOld)
+            Vector2 newDirection = new Vector2(path[i - 1].GridPositionX - path[i].GridPositionX, path[i - 1].GridPositionY - path[i].GridPositionY);
+            if (newDirection != oldDirection)
             {
                 wayPoints.Add(path[i].WorldPosition);
             }
-            directionOld = directionNew;
+            oldDirection = newDirection;
         }
         return wayPoints.ToArray();
     }
 
     int GetDistance(Node nodeA, Node nodeB)
     {
-        int distanceX = Mathf.Abs(nodeA.GridX - nodeB.GridX);
-        int distanceY = Mathf.Abs(nodeA.GridY - nodeB.GridY);
+        int distanceX = Mathf.Abs(nodeA.GridPositionX - nodeB.GridPositionX);
+        int distanceY = Mathf.Abs(nodeA.GridPositionY - nodeB.GridPositionY);
 
         if (distanceX > distanceY)
             return 14 * distanceY + 10 * (distanceX - distanceY);

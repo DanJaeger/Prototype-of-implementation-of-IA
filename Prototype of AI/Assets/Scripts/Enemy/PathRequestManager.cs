@@ -18,7 +18,6 @@ public class PathRequestManager : MonoBehaviour
         instance = this;
         pathfinding = GetComponent<Pathfinding>();
     }
-
     struct PathRequest
     {
         public Vector3 pathStart;
@@ -45,7 +44,6 @@ public class PathRequestManager : MonoBehaviour
             Debug.Log("La instancia es nula");
         }
     }
-
     void TryProcessNext()
     {
         if (!isProcessingPath && pathRequestsQueue.Count > 0)
@@ -55,7 +53,6 @@ public class PathRequestManager : MonoBehaviour
             pathfinding.StartFindPath(currentPathRequest.pathStart, currentPathRequest.pathEnd);
         }
     }
-
     public void FinishProcessingPath(Vector3[] path, bool success)
     {
         currentPathRequest.callback(path, success);

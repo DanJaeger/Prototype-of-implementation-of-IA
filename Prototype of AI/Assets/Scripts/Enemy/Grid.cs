@@ -24,7 +24,6 @@ public class Grid : MonoBehaviour
 
         CreateGrid();
     }
-
     void CreateGrid()
     {
         grid = new Node[gridSizeX, gridSizeY];
@@ -45,7 +44,6 @@ public class Grid : MonoBehaviour
         }
         #endregion
     }
-
     public int MaxSize
     {
         get
@@ -53,7 +51,6 @@ public class Grid : MonoBehaviour
             return gridSizeX * gridSizeY;
         }
     }
-
     public List<Node> GetNeighbours(Node node)
     {
         List<Node> neigbours = new List<Node>();
@@ -65,8 +62,8 @@ public class Grid : MonoBehaviour
                 if (x == 0 && y == 0)
                     continue;
 
-                int checkX = node.GridPositionX + x;
-                int checkY = node.GridPositionY + y;
+                int checkX = node.GridX + x;
+                int checkY = node.GridY + y;
 
                 if(checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
                 {
@@ -77,7 +74,6 @@ public class Grid : MonoBehaviour
 
         return neigbours;
     }
-
     public Node GetNodeFromWorldPoint(Vector3 worldPosition)
     {
         float percentX = (worldPosition.x / gridWorldSize.x) + 0.5f;
@@ -91,7 +87,7 @@ public class Grid : MonoBehaviour
 
         return grid[x, y];
     }
-
+    /*
     public Vector3[] path;
     public Node targetPosition;
     private void OnDrawGizmos()
@@ -135,5 +131,5 @@ public class Grid : MonoBehaviour
             }
         }
     }
-
+    */
 }

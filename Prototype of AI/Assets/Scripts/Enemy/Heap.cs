@@ -10,9 +10,8 @@ public class Heap<T> where T : IHeapItem<T>
 
     public Heap(int maxHeapSize)
     {
-        items = new T[maxHeapSize];
+        items = new T[maxHeapSize]; 
     }
-
     public void Add(T item)
     {
         item.HeapIndex = currentItemCount;
@@ -20,7 +19,6 @@ public class Heap<T> where T : IHeapItem<T>
         SortUp(item);
         currentItemCount++;
     }
-
     public T RemoveFirst()
     {
         T firstItem = items[0];
@@ -32,12 +30,10 @@ public class Heap<T> where T : IHeapItem<T>
 
         return firstItem;
     }
-
     public void UpdateItem(T item)
     {
         SortUp(item);
     }
-
     public int Count
     {
         get
@@ -45,13 +41,10 @@ public class Heap<T> where T : IHeapItem<T>
             return currentItemCount;
         }
     }
-    
-
     public bool Contains(T item)
     {
         return Equals(items[item.HeapIndex], item);
     }
-
     void SortDown(T item)
     {
         while (true)
@@ -87,7 +80,6 @@ public class Heap<T> where T : IHeapItem<T>
             }
         }
     }
-
     void SortUp(T item)
     {
         int parentIndex = (item.HeapIndex - 1)/2;
@@ -108,7 +100,6 @@ public class Heap<T> where T : IHeapItem<T>
 
         }
     }
-
     void Swap(T itemA, T itemB)
     {
         items[itemA.HeapIndex] = itemB;
@@ -118,9 +109,7 @@ public class Heap<T> where T : IHeapItem<T>
         itemA.HeapIndex = itemB.HeapIndex;
         itemB.HeapIndex = itemAIndex;
     }
-
 }
-
 public interface IHeapItem<T> : IComparable<T>
 {
     int HeapIndex

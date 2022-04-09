@@ -22,7 +22,6 @@ public class PlayerDetection : MonoBehaviour
         fov = GetComponent<FieldOfView>();
         enemyStateManager = GetComponent<EnemyStateManager>();
     }
-
     void Update()
     {
         FindVisibleTargets();
@@ -31,7 +30,6 @@ public class PlayerDetection : MonoBehaviour
         fov.viewAngle = viewAngle;
         fov.closestTarget = player;
     }
-
     public void FindVisibleTargets()
     {
         player = null;

@@ -21,7 +21,7 @@ public class PatrollingState : EnemyBaseState
 
     public override void ExitState(EnemyStateManager enemy)
     {
-        //DO SOMETHING
+        
     }
 
     public override void UpdateState(EnemyStateManager enemy)

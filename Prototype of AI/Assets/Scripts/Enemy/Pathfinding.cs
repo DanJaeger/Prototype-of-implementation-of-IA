@@ -13,12 +13,10 @@ public class Pathfinding : MonoBehaviour
         grid = GetComponent<Grid>();
         pathRequestManager = GetComponent<PathRequestManager>();
     }
-
     public void StartFindPath(Vector3 startPos, Vector3 targetPos)
     {
         StartCoroutine(FindPath(startPos, targetPos));
     }
-
     IEnumerator FindPath(Vector3 startPosition, Vector3 endPosition)
     {
         Vector3[] wayPoints = new Vector3[0];
@@ -26,7 +24,7 @@ public class Pathfinding : MonoBehaviour
 
         Node startNode = grid.GetNodeFromWorldPoint(startPosition);
         Node targetNode = grid.GetNodeFromWorldPoint(endPosition);
-        grid.targetPosition = targetNode;
+        //grid.targetPosition = targetNode;
 
         if (startNode.Walkable && targetNode.Walkable)
         {
@@ -81,7 +79,6 @@ public class Pathfinding : MonoBehaviour
         }
         pathRequestManager.FinishProcessingPath(wayPoints, pathSuccess);
     }
-
     Vector3[] RetracePath(Node startNode, Node endNode)
     {
         List<Node> path = new List<Node>();
@@ -96,7 +93,6 @@ public class Pathfinding : MonoBehaviour
         Array.Reverse(wayPoints);
         return wayPoints;
     }
-
     Vector3[] SimplifyPath(List<Node> path)
     {
         List<Vector3> wayPoints = new List<Vector3>();
@@ -104,7 +100,7 @@ public class Pathfinding : MonoBehaviour
 
         for (int i = 1; i < path.Count; i++)
         {
-            Vector2 newDirection = new Vector2(path[i - 1].GridPositionX - path[i].GridPositionX, path[i - 1].GridPositionY - path[i].GridPositionY);
+            Vector2 newDirection = new Vector2(path[i - 1].GridX - path[i].GridX, path[i - 1].GridY - path[i].GridY);
             if (newDirection != oldDirection)
             {
                 wayPoints.Add(path[i].WorldPosition);
@@ -113,11 +109,10 @@ public class Pathfinding : MonoBehaviour
         }
         return wayPoints.ToArray();
     }
-
     int GetDistance(Node nodeA, Node nodeB)
     {
-        int distanceX = Mathf.Abs(nodeA.GridPositionX - nodeB.GridPositionX);
-        int distanceY = Mathf.Abs(nodeA.GridPositionY - nodeB.GridPositionY);
+        int distanceX = Mathf.Abs(nodeA.GridX - nodeB.GridX);
+        int distanceY = Mathf.Abs(nodeA.GridY - nodeB.GridY);
 
         if (distanceX > distanceY)
             return 14 * distanceY + 10 * (distanceX - distanceY);

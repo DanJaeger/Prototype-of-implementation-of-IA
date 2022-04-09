@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -47,11 +47,14 @@
   <PropertyGroup>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <UnityProjectGenerator>Package</UnityProjectGenerator>
-    <UnityProjectGeneratorVersion>2.0.12</UnityProjectGeneratorVersion>
+    <UnityProjectGeneratorVersion>2.0.15</UnityProjectGeneratorVersion>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>2020.3.14f1</UnityVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\PlayerMovementHandler.cs" />
     <Compile Include="Assets\Scripts\Enemy\Pathfinding.cs" />
@@ -65,7 +68,6 @@
     <Compile Include="Assets\Scripts\PunchType.cs" />
     <Compile Include="Assets\Scripts\InputHandler.cs" />
     <Compile Include="Assets\Scripts\Enemy\EnemyBaseState.cs" />
-    <Compile Include="Assets\Scripts\Enemy\Unit.cs" />
     <Compile Include="Assets\Scripts\FieldOfViewEditor.cs" />
     <Compile Include="Assets\Scripts\Enemy\PatrollingState.cs" />
     <Compile Include="Assets\Scripts\Enemy\EnemyAnimations.cs" />
@@ -659,33 +661,33 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{2CEEBCDE-AAA6-8C05-A946-B5D2505CDD32}</Project>
-      <Name>Assembly-CSharp-firstpass</Name>
+    <ProjectReference Include="Assembly-CSharp-firstpass.Player.csproj">
+      <Project>{574E26D2-4E92-F276-25CD-1BA3CE2CC457}</Project>
+      <Name>Assembly-CSharp-firstpass.Player</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.Postprocessing.Runtime.csproj">
-      <Project>{5A64CC53-6273-6371-16DA-54729B80C742}</Project>
-      <Name>Unity.Postprocessing.Runtime</Name>
+    <ProjectReference Include="Unity.Postprocessing.Runtime.Player.csproj">
+      <Project>{A0131E5B-DA45-7E28-35A7-432840DCBB1D}</Project>
+      <Name>Unity.Postprocessing.Runtime.Player</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.Timeline.csproj">
-      <Project>{E6F246ED-1032-A1A9-5EC2-46EC9AA18B7E}</Project>
-      <Name>Unity.Timeline</Name>
+    <ProjectReference Include="Unity.Timeline.Player.csproj">
+      <Project>{CC07EC9A-726A-3F58-DEEA-50C8C05ECBA3}</Project>
+      <Name>Unity.Timeline.Player</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.TextMeshPro.csproj">
-      <Project>{8188BBEE-D53C-4A7E-7A63-8C94706EB827}</Project>
-      <Name>Unity.TextMeshPro</Name>
+    <ProjectReference Include="Unity.TextMeshPro.Player.csproj">
+      <Project>{43E6F7E3-C894-6AF8-7DCF-410D41022C4F}</Project>
+      <Name>Unity.TextMeshPro.Player</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.InputSystem.csproj">
-      <Project>{10AC76FA-8352-6EE1-7696-6E6DACF3C554}</Project>
-      <Name>Unity.InputSystem</Name>
+    <ProjectReference Include="Unity.InputSystem.Player.csproj">
+      <Project>{CA851EB1-9F51-4E85-D8CF-40AF9124B273}</Project>
+      <Name>Unity.InputSystem.Player</Name>
     </ProjectReference>
-    <ProjectReference Include="UnityEngine.UI.csproj">
-      <Project>{D967DDA3-D3CC-3D85-2C8B-D6688B43D1CF}</Project>
-      <Name>UnityEngine.UI</Name>
+    <ProjectReference Include="UnityEngine.UI.Player.csproj">
+      <Project>{8F7A90E3-AC5E-1D06-9EBF-6789D3856E66}</Project>
+      <Name>UnityEngine.UI.Player</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.ProGrids.csproj">
-      <Project>{0A5F98E6-6AB4-DD47-50F0-82F19E92CEE2}</Project>
-      <Name>Unity.ProGrids</Name>
+    <ProjectReference Include="Unity.ProGrids.Player.csproj">
+      <Project>{D73CF131-582E-52AE-E0C1-70507FCA34B4}</Project>
+      <Name>Unity.ProGrids.Player</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

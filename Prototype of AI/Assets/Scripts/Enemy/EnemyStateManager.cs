@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class EnemyStateManager : MonoBehaviour
 {
+    #region Components
     EnemyBaseState currentState;
     CharacterController characterController;
     Animator animator;
     PlayerDetection playerDetection;
     Grid grid;
-
-    private float health;
-    [SerializeField] GameObject player;
+    #endregion
 
     #region PatrollingVariables
     [SerializeField] Transform[] patrolPoints;
@@ -19,26 +18,31 @@ public class EnemyStateManager : MonoBehaviour
 
     #endregion
 
+    #region Movement variables
     [SerializeField] float movementSpeed = 3.0f;
     float rotationSpeed = 10.0f;
     Vector3 movementDirection = Vector3.zero;
+    #endregion
+
+    #region Pathfinding variables
     Vector3[] path;
-
-    GameObject playerGameObject = null;
-    Transform playerTransform;
     Transform currentTarget;
-    bool gettingHit = false;
-    bool playerIsOutOfView = true;
     bool followingPath = false;
-    float timer = 0;
-    int targetIndex = 0;
-
     const float pathUpdateMoveThreshold = 1.0f;
     const float minPathUpdateTime = 0.2f;
+    #endregion
+
+    private float health;
+    [SerializeField] GameObject player;
+    GameObject playerGameObject = null;
+    Transform playerTransform;
+    bool gettingHit = false;
+    bool playerIsOutOfView = true;
+    float timer = 0;
+    const float timeLimitToGoPatrol = 4.0f;
 
     public GameObject Player { get => playerGameObject; }
     public bool PlayerIsOutOfView { get => playerIsOutOfView; }
-    public Transform[] PatrolPoints { get => patrolPoints; }
     public bool GettingHit { get => gettingHit; set => gettingHit = value; }
     public float Health { get => health; set => health = value; }
     public Transform CurrentTarget { get => currentTarget; set => currentTarget = value; }
@@ -54,7 +58,6 @@ public class EnemyStateManager : MonoBehaviour
         playerDetection = GetComponent<PlayerDetection>();
         grid = FindObjectOfType<Grid>().GetComponent<Grid>();
     }
-
     void Start()
     {
         currentTarget = patrolPoints[currentPatrolPointsIndex];
@@ -65,7 +68,6 @@ public class EnemyStateManager : MonoBehaviour
 
         health = 100;
     }
-
     void Update()
     {
         playerGameObject = playerDetection.Player;
@@ -104,7 +106,7 @@ public class EnemyStateManager : MonoBehaviour
         if (pathSuccessful)
         {
             path = newPath;
-            grid.path = newPath; 
+            //grid.path = newPath; 
             followingPath = true;
 
             if (currentState == ChasingState.Instance) {
@@ -123,7 +125,6 @@ public class EnemyStateManager : MonoBehaviour
             }
         }
     }
-
     public void Patrol()
     {
         Transform nextPatrolPoint = patrolPoints[currentPatrolPointsIndex];
@@ -140,13 +141,10 @@ public class EnemyStateManager : MonoBehaviour
     }
     public void Chase()
     {
-        if (!gettingHit)
+        if (!CanChase())
         {
-            if (!CanChase())
-            {
-                StopCoroutine("Move");
-                animator.SetBool("IsWalking", false);
-            }
+            StopCoroutine("Move");
+            animator.SetBool("IsWalking", false);
         }
     }
     bool CanChase()
@@ -158,10 +156,9 @@ public class EnemyStateManager : MonoBehaviour
         else
             return true;
     }
-
     IEnumerator Move()
     {
-        targetIndex = 0;
+        int targetIndex = 0;
         Vector3 targetPosition = transform.forward;
 
         if (path.Length > 0) {
@@ -219,7 +216,6 @@ public class EnemyStateManager : MonoBehaviour
             }
         }
     }
-
     public void CheckIfCanChase()
     {
         if (playerGameObject != null)
@@ -228,27 +224,14 @@ public class EnemyStateManager : MonoBehaviour
             timer = 0;
         }
     }
-
     public void PlayerOutOfView()
     {
         timer += Time.deltaTime;
-        if (timer >= 4)
+        if (timer >= timeLimitToGoPatrol)
         {
             playerIsOutOfView = true;
         }
     }
-    Vector3 GetPlayerDirection()
-    {
-        Vector3 targetDirection = Vector3.zero;
-
-        targetDirection = (playerTransform != null) ?
-            playerTransform.position - transform.position :
-            transform.forward;
-        targetDirection.Normalize();
-
-        return targetDirection;
-    }
-
     void HandleRotation()
     {
         Vector3 positionToLookAt;

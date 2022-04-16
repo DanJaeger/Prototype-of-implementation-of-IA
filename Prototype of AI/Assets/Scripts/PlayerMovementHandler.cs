@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class PlayerMovementHandler : MonoBehaviour
 {
+    float health;
+
     #region Components
     private GameObject activeModel;
     private Rigidbody rb;
     private Animator anim;
-    FightingSystem fightingSystem;
     CharacterController characterController;
     EnemyDetection enemyDetection;
     #endregion
@@ -30,7 +31,7 @@ public class PlayerMovementHandler : MonoBehaviour
     float gravity = -9.8f;
     float groundedGravity = -0.05f;
     float fallMultiplier = 2.0f;
-    bool isFalling = false;
+    static bool isFalling = false;
 
     float initialJumpVelocity;
     const float maxJumpHeight = 2.0f;
@@ -41,6 +42,7 @@ public class PlayerMovementHandler : MonoBehaviour
 
     int isWalkingHash;
     int isJumpingHash;
+    static bool isGettingHit = false;
 
     public GameObject ActiveModel { get => activeModel; }
     public Rigidbody Rb { get => rb; }
@@ -48,17 +50,20 @@ public class PlayerMovementHandler : MonoBehaviour
     public Vector2 CurrentMovementInput { get => currentMovementInput; set => currentMovementInput = value; }
     public bool IsJumpPressed { get => isJumpPressed; set => isJumpPressed = value; }
     public bool IsJumpAnimating { get => isJumpAnimating; }
+    public bool IsGettingHit { get => isGettingHit; set => isGettingHit = value; }
+    public float Health { get => health; set => health = value; }
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         characterController = GetComponent<CharacterController>();
-        fightingSystem = GetComponentInChildren<FightingSystem>();
         enemyDetection = GetComponentInChildren<EnemyDetection>();
     }
 
     void Start()
     {
+        health = 30;
+
         Init();
     }
 
@@ -99,12 +104,10 @@ public class PlayerMovementHandler : MonoBehaviour
 
     void MovePlayer()
     {
-        #region PlayerMovement
         if (!FightingSystem.isFighting)
         {
             HandleMovement();
         }
-        #endregion
 
         HandleRotation();
         HandleGravity();

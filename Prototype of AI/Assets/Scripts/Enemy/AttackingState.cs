@@ -25,6 +25,16 @@ public class AttackingState : EnemyBaseState
 
     public override void UpdateState(EnemyStateManager enemy)
     {
-        //Keep attacking
+        enemy.CheckIfCanAttack();
+
+        if (!enemy.CanAttack)
+        {
+            enemy.ChangeState(ChasingState.Instance);
+        }
+        else
+        {
+            enemy.Attack();
+        }
+        
     }
 }

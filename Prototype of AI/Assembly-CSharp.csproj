@@ -73,6 +73,7 @@
     <Compile Include="Assets\Scripts\Enemy\EnemyAnimations.cs" />
     <Compile Include="Assets\Scripts\Enemy\PathRequestManager.cs" />
     <Compile Include="Assets\Scripts\Enemy\Grid.cs" />
+    <Compile Include="Assets\Scripts\Enemy\EnemyHitCollider.cs" />
     <Compile Include="Assets\Scripts\Enemy\AttackingState.cs" />
     <Compile Include="Assets\Scripts\Enemy\ChasingState.cs" />
     <Compile Include="Assets\Scripts\Enemy\Node.cs" />

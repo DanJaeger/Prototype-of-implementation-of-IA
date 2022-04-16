@@ -143,4 +143,9 @@ public class FightingSystem : MonoBehaviour
             isFighting = false;
         }
     }
+    public void UpdateAnimations()
+    {
+        movementHandler.IsGettingHit = false;
+    }
+    
 }

@@ -26,7 +26,11 @@ public class ChasingState : EnemyBaseState
     public override void UpdateState(EnemyStateManager enemy)
     {
         enemy.CheckIfCanChase();
+        enemy.CheckIfCanAttack();
         enemy.Chase();
+
+        if (enemy.CanAttack)
+            enemy.ChangeState(AttackingState.Instance);
 
         if (enemy.Player == null) { 
             enemy.PlayerOutOfView();

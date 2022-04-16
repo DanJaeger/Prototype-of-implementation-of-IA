@@ -36,16 +36,20 @@ public class EnemyStateManager : MonoBehaviour
     [SerializeField] GameObject player;
     GameObject playerGameObject = null;
     Transform playerTransform;
-    bool gettingHit = false;
+    bool isGettingHit = false;
+    bool canAttack = false;
+    bool canPunch = true;
     bool playerIsOutOfView = true;
     float timer = 0;
     const float timeLimitToGoPatrol = 4.0f;
 
     public GameObject Player { get => playerGameObject; }
     public bool PlayerIsOutOfView { get => playerIsOutOfView; }
-    public bool GettingHit { get => gettingHit; set => gettingHit = value; }
+    public bool GettingHit { get => isGettingHit; set => isGettingHit = value; }
     public float Health { get => health; set => health = value; }
     public Transform CurrentTarget { get => currentTarget; set => currentTarget = value; }
+    public bool CanAttack { get => canAttack; set => canAttack = value; }
+
     public Transform GetPatrolPoint()
     {
         return patrolPoints[currentPatrolPointsIndex];
@@ -70,11 +74,11 @@ public class EnemyStateManager : MonoBehaviour
     }
     void Update()
     {
-        playerGameObject = playerDetection.Player;
+        playerGameObject = playerDetection.Player; 
         if (playerGameObject != null)
-            playerTransform = playerGameObject.transform; 
+            playerTransform = playerGameObject.transform;
 
-        if (!gettingHit)
+        if (!isGettingHit)
         {
             currentState.UpdateState(this);
             HandleRotation();
@@ -232,6 +236,35 @@ public class EnemyStateManager : MonoBehaviour
             playerIsOutOfView = true;
         }
     }
+    public void CheckIfCanAttack()
+    {
+        float distanceToTarget = (playerTransform.position - transform.position).sqrMagnitude;
+        if (playerGameObject != null && distanceToTarget <= 4)
+        {
+            canAttack = true;
+        }
+        else
+        {
+            canAttack = false;
+        }
+    }
+    public void Attack()
+    {
+        if (canPunch)
+        {
+            animator.Play("RightPunch");
+            canPunch = false;
+            transform.DOLookAt(playerTransform.position, 0.15f);
+            transform.DOMove(TargetOffset(playerTransform), 0.4f);
+        }
+    }
+    Vector3 TargetOffset(Transform target)
+    {
+        Vector3 position;
+        position = target.position;
+        return Vector3.MoveTowards(position, transform.position, .85f);
+    }
+
     void HandleRotation()
     {
         Vector3 positionToLookAt;
@@ -250,7 +283,15 @@ public class EnemyStateManager : MonoBehaviour
     }
     public void UpdateAnimations()
     {
-        gettingHit = false;
+        isGettingHit = false;
+        StopCoroutine("RechargePunchCoroutine");
+        StartCoroutine("RechargePunchCoroutine");
+    }
+
+    IEnumerator RechargePunchCoroutine()
+    {
+        yield return new WaitForSeconds(2.0f);
+        canPunch = true;
     }
 
 }

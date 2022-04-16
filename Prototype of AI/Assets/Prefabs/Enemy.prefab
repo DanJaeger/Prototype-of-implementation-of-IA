@@ -742,7 +742,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: c156c69e8560f494381f0fd7fbabc4a1, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -781,6 +781,8 @@ MonoBehaviour:
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}
+  movementSpeed: 3
+  player: {fileID: 0}
 --- !u!114 &5415465919529798518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -799,6 +801,7 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 2048
+  player: {fileID: 0}
 --- !u!114 &-4506032625552423835
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1799,7 +1802,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2865215f37c868f448da1dc2f89d09db, type: 2}
+  - {fileID: 2100000, guid: 095d156b3b0ff4b42a9ebed09c7156d5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2155,7 +2158,7 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8872903984775862666}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.45
   m_Height: 2.1

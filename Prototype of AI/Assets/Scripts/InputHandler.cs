@@ -22,7 +22,10 @@ public class InputHandler : MonoBehaviour
     void Update()
     {
         GetInput();
-        UpdateInputs();
+        if (!movementHandler.IsGettingHit)
+        {
+            UpdateInputs();
+        }
     }
     void GetInput()
     {

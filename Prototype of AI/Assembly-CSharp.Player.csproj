@@ -56,29 +56,38 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\PlayerMovementHandler.cs" />
+    <Compile Include="Assets\Scripts\Enemy\State Machine\DyingState.cs" />
+    <Compile Include="Assets\Scripts\Player\State Machine\PlayerGroundedState.cs" />
+    <Compile Include="Assets\Scripts\Player\State Machine\PlayerStateFactory.cs" />
+    <Compile Include="Assets\Scripts\Enemy\State Machine\EnemyStateFactory.cs" />
+    <Compile Include="Assets\Scripts\Player\State Machine\PlayerFightState.cs" />
     <Compile Include="Assets\Scripts\Enemy\Pathfinding.cs" />
-    <Compile Include="Assets\Scripts\Enemy\EnemyStateManager.cs" />
-    <Compile Include="Assets\Scripts\HitCollider.cs" />
-    <Compile Include="Assets\Scripts\CameraManager.cs" />
+    <Compile Include="Assets\Scripts\Enemy\State Machine\EnemyStateManager.cs" />
+    <Compile Include="Assets\Scripts\Player\PlayerHitCollider.cs" />
+    <Compile Include="Assets\Scripts\Player\CameraManager.cs" />
     <Compile Include="Assets\Scripts\Enemy\PlayerDetection.cs" />
-    <Compile Include="Assets\Scripts\EnemyDetection.cs" />
+    <Compile Include="Assets\Scripts\Player\State Machine\IRootState.cs" />
+    <Compile Include="Assets\Scripts\Player\EnemyDetection.cs" />
+    <Compile Include="Assets\Scripts\Player\State Machine\PlayerWalkState.cs" />
     <Compile Include="Assets\Scripts\Enemy\Heap.cs" />
-    <Compile Include="Assets\Scripts\FightingSystem.cs" />
-    <Compile Include="Assets\Scripts\PunchType.cs" />
-    <Compile Include="Assets\Scripts\InputHandler.cs" />
-    <Compile Include="Assets\Scripts\Enemy\EnemyBaseState.cs" />
-    <Compile Include="Assets\Scripts\FieldOfViewEditor.cs" />
-    <Compile Include="Assets\Scripts\Enemy\PatrollingState.cs" />
+    <Compile Include="Assets\Scripts\Utilities\PunchType.cs" />
+    <Compile Include="Assets\Scripts\Player\InputHandler.cs" />
+    <Compile Include="Assets\Scripts\Enemy\State Machine\EnemyBaseState.cs" />
+    <Compile Include="Assets\Scripts\Utilities\FieldOfViewEditor.cs" />
+    <Compile Include="Assets\Scripts\Enemy\State Machine\PatrollingState.cs" />
     <Compile Include="Assets\Scripts\Enemy\EnemyAnimations.cs" />
     <Compile Include="Assets\Scripts\Enemy\PathRequestManager.cs" />
     <Compile Include="Assets\Scripts\Enemy\Grid.cs" />
     <Compile Include="Assets\Scripts\Enemy\EnemyHitCollider.cs" />
-    <Compile Include="Assets\Scripts\Enemy\AttackingState.cs" />
-    <Compile Include="Assets\Scripts\Enemy\ChasingState.cs" />
+    <Compile Include="Assets\Scripts\Enemy\State Machine\AttackingState.cs" />
+    <Compile Include="Assets\Scripts\Enemy\State Machine\ChasingState.cs" />
+    <Compile Include="Assets\Scripts\Player\State Machine\PlayerStateManager.cs" />
     <Compile Include="Assets\Scripts\Enemy\Node.cs" />
-    <Compile Include="Assets\Scripts\FieldOfView.cs" />
-    <Compile Include="Assets\Scripts\BorderDetection.cs" />
+    <Compile Include="Assets\Scripts\Player\State Machine\PlayerBaseState.cs" />
+    <Compile Include="Assets\Scripts\Utilities\FieldOfView.cs" />
+    <Compile Include="Assets\Scripts\Player\State Machine\PlayerJumpState.cs" />
+    <Compile Include="Assets\Scripts\Player\BorderDetection.cs" />
+    <Compile Include="Assets\Scripts\Player\State Machine\PlayerIdleState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

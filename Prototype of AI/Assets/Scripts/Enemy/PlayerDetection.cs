@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerDetection : MonoBehaviour
@@ -40,7 +38,7 @@ public class PlayerDetection : MonoBehaviour
             Transform target = targetsInViewRadius[i].transform;
             Vector3 directionToTarget = (target.position - transform.position).normalized;
 
-            if (enemyStateManager.GettingHit) { 
+            if (enemyStateManager.IsGettingHit) { 
                 player = target.gameObject;
                 return;
             }
